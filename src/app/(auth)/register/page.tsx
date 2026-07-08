@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Wrench, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Wrench, Mail, Lock, Eye, EyeOff, ArrowLeft, User, CheckCircle } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,15 +27,24 @@ export default function RegisterPage() {
       return;
     }
 
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       if (response.ok) {
-        router.push("/login?registered=true");
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/login?registered=true");
+        }, 2000);
       } else {
         const data = await response.json();
         setError(data.error || "Error al crear el usuario");
@@ -44,6 +55,23 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-black via-brand-gray-dark to-brand-black p-4">
+        <div className="w-full max-w-md text-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-green-500">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-brand-black mb-2">¡Cuenta creada!</h2>
+            <p className="text-gray-500 mb-4">Tu usuario se registró exitosamente.</p>
+            <p className="text-sm text-gray-400">Redirigiendo al login...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-black via-brand-gray-dark to-brand-black p-4">
@@ -69,7 +97,25 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-brand-gray-dark mb-2">
+                Nombre completo
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none transition-all"
+                  placeholder="Tu nombre"
+                  required
+                  minLength={2}
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-brand-gray-dark mb-2">
                 Email
@@ -110,6 +156,7 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-gray-400">Mínimo 6 caracteres</p>
             </div>
 
             <div>
@@ -128,12 +175,15 @@ export default function RegisterPage() {
                   minLength={6}
                 />
               </div>
+              {confirmPassword && password !== confirmPassword && (
+                <p className="mt-1 text-xs text-red-500">Las contraseñas no coinciden</p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-brand-red hover:bg-brand-red-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-primary"
+              disabled={loading || (confirmPassword !== "" && password !== confirmPassword)}
+              className="w-full bg-brand-red hover:bg-brand-red-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-primary mt-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
