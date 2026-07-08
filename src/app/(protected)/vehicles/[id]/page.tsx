@@ -74,13 +74,13 @@ export default function VehicleDetailPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "PENDIENTE":
-        return <Clock className="w-5 h-5 text-yellow-600" />;
+        return <Clock className="w-5 h-5 text-yellow-400" />;
       case "EN_REPARACION":
-        return <Wrench className="w-5 h-5 text-blue-600" />;
+        return <Wrench className="w-5 h-5 text-blue-400" />;
       case "LISTO":
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-green-400" />;
       case "ENTREGADO":
-        return <CheckCircle className="w-5 h-5 text-gray-600" />;
+        return <CheckCircle className="w-5 h-5 text-white/40" />;
       default:
         return null;
     }
@@ -93,13 +93,28 @@ export default function VehicleDetailPage() {
       LISTO: "badge-listo",
       ENTREGADO: "badge-entregado",
     };
-    return badges[status] || "bg-gray-100 text-gray-800";
+    return badges[status] || "bg-white/10 text-white/60";
+  };
+
+  const getTimelineDotColor = (status: string) => {
+    switch (status) {
+      case "PENDIENTE":
+        return "bg-yellow-500/20";
+      case "EN_REPARACION":
+        return "bg-blue-500/20";
+      case "LISTO":
+        return "bg-green-500/20";
+      case "ENTREGADO":
+        return "bg-white/10";
+      default:
+        return "bg-white/10";
+    }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-red"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -107,11 +122,11 @@ export default function VehicleDetailPage() {
   if (!vehicle) {
     return (
       <div className="text-center py-12">
-        <Car className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-500">Vehículo no encontrado</p>
+        <Car className="w-12 h-12 text-white/40 mx-auto mb-4" />
+        <p className="text-white/60">Vehículo no encontrado</p>
         <button
           onClick={() => router.push("/vehicles")}
-          className="mt-4 text-brand-red hover:text-brand-red-dark"
+          className="glass-btn-ghost mt-4"
         >
           Volver a vehículos
         </button>
@@ -126,20 +141,20 @@ export default function VehicleDetailPage() {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => router.back()}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="glass-btn-ghost p-2"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-brand-black">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">
               {vehicle.brand} {vehicle.model}
             </h1>
-            <p className="text-gray-500 mt-1">Historial de servicios</p>
+            <p className="text-white/60 mt-1">Historial de servicios</p>
           </div>
         </div>
         <Link
           href={`/services?vehicleId=${vehicle.id}`}
-          className="inline-flex items-center justify-center px-4 py-2 bg-brand-red hover:bg-brand-red-dark text-white font-medium rounded-lg transition-colors"
+          className="glass-btn inline-flex items-center justify-center"
         >
           <Wrench className="w-5 h-5 mr-2" />
           Nuevo Servicio
@@ -147,43 +162,43 @@ export default function VehicleDetailPage() {
       </div>
 
       {/* Vehicle Info Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="glass-card p-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 bg-brand-gray-dark rounded-xl flex items-center justify-center">
+            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center">
               <Car className="w-8 h-8 text-white" />
             </div>
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-brand-gray-dark text-white">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-white/10 text-white">
                   {vehicle.plate}
                 </span>
                 {vehicle.color && (
-                  <span className="text-sm text-gray-500">{vehicle.color}</span>
+                  <span className="text-sm text-white/60">{vehicle.color}</span>
                 )}
               </div>
-              <p className="text-lg font-semibold text-brand-black">
+              <p className="text-lg font-semibold text-white">
                 {vehicle.brand} {vehicle.model} {vehicle.year}
               </p>
               {vehicle.vin && (
-                <p className="text-sm text-gray-500 mt-1">VIN: {vehicle.vin}</p>
+                <p className="text-sm text-white/60 mt-1">VIN: {vehicle.vin}</p>
               )}
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Propietario</h3>
+          <div className="glass-card bg-white/5 rounded-2xl p-4">
+            <h3 className="text-sm font-medium text-white/60 mb-2">Propietario</h3>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-brand-red rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="font-medium text-brand-black">{vehicle.client.name}</p>
+                <p className="font-medium text-white">{vehicle.client.name}</p>
                 {vehicle.client.phone && (
-                  <p className="text-sm text-gray-500">{vehicle.client.phone}</p>
+                  <p className="text-sm text-white/60">{vehicle.client.phone}</p>
                 )}
                 {vehicle.client.email && (
-                  <p className="text-sm text-gray-500">{vehicle.client.email}</p>
+                  <p className="text-sm text-white/60">{vehicle.client.email}</p>
                 )}
               </div>
             </div>
@@ -191,96 +206,88 @@ export default function VehicleDetailPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/10">
           <div className="text-center">
-            <p className="text-2xl font-bold text-brand-black">{services.length}</p>
-            <p className="text-sm text-gray-500">Servicios</p>
+            <p className="text-2xl font-bold text-white">{services.length}</p>
+            <p className="text-sm text-white/60">Servicios</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-brand-black">
+            <p className="text-2xl font-bold text-white">
               {services.filter((s) => s.status === "PENDIENTE").length}
             </p>
-            <p className="text-sm text-gray-500">Pendientes</p>
+            <p className="text-sm text-white/60">Pendientes</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-brand-black">
+            <p className="text-2xl font-bold text-white">
               {services.filter((s) => s.status === "LISTO" || s.status === "ENTREGADO").length}
             </p>
-            <p className="text-sm text-gray-500">Completados</p>
+            <p className="text-sm text-white/60">Completados</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-brand-black">
+            <p className="text-2xl font-bold text-white">
               ${services.reduce((sum, s) => sum + Number(s.totalCost), 0).toLocaleString("es-AR")}
             </p>
-            <p className="text-sm text-gray-500">Total Gastado</p>
+            <p className="text-sm text-white/60">Total Gastado</p>
           </div>
         </div>
       </div>
 
       {/* Service History Timeline */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-brand-black">Historial de Servicios</h2>
+      <div className="glass-card">
+        <div className="px-6 py-4 border-b border-white/10">
+          <h2 className="text-lg font-semibold text-white">Historial de Servicios</h2>
         </div>
 
         {services.length === 0 ? (
           <div className="text-center py-12">
-            <Wrench className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No hay servicios registrados</p>
+            <Wrench className="w-12 h-12 text-white/40 mx-auto mb-4" />
+            <p className="text-white/60">No hay servicios registrados</p>
           </div>
         ) : (
           <div className="p-6">
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-white/10"></div>
 
               {/* Timeline items */}
               <div className="space-y-6">
                 {services.map((service, index) => (
                   <div key={service.id} className="relative flex items-start">
                     {/* Timeline dot */}
-                    <div className="relative z-10 w-16 h-16 bg-white flex items-center justify-center">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        service.status === "PENDIENTE"
-                          ? "bg-yellow-100"
-                          : service.status === "EN_REPARACION"
-                          ? "bg-blue-100"
-                          : service.status === "LISTO"
-                          ? "bg-green-100"
-                          : "bg-gray-100"
-                      }`}>
+                    <div className="relative z-10 w-16 h-16 flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getTimelineDotColor(service.status)}`}>
                         {getStatusIcon(service.status)}
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 bg-gray-50 rounded-xl p-4 ml-4">
+                    <div className="flex-1 glass-card bg-white/5 rounded-2xl p-4 ml-4">
                       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-3">
                         <div>
                           <div className="flex items-center space-x-2 mb-1">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(service.status)}`}>
                               {service.status.replace("_", " ")}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-white/60">
                               {new Date(service.entryDate).toLocaleDateString("es-AR")}
                             </span>
                             {service.exitDate && (
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-white/60">
                                 → {new Date(service.exitDate).toLocaleDateString("es-AR")}
                               </span>
                             )}
                           </div>
-                          <h3 className="font-semibold text-brand-black">{service.description}</h3>
+                          <h3 className="font-semibold text-white">{service.description}</h3>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-brand-black">
+                          <p className="text-lg font-bold text-white">
                             ${Number(service.totalCost).toLocaleString("es-AR")}
                           </p>
                         </div>
                       </div>
 
                       {/* Cost breakdown */}
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
+                      <div className="flex flex-wrap gap-4 text-sm text-white/60 mb-3">
                         <div className="flex items-center">
                           <Wrench className="w-4 h-4 mr-1" />
                           Mano de obra: ${Number(service.laborCost).toLocaleString("es-AR")}
@@ -295,15 +302,15 @@ export default function VehicleDetailPage() {
 
                       {/* Parts list */}
                       {service.parts && service.parts.length > 0 && (
-                        <div className="bg-white rounded-lg p-3 mt-3">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Repuestos utilizados:</p>
+                        <div className="glass-card bg-white/5 rounded-xl p-3 mt-3">
+                          <p className="text-sm font-medium text-white/80 mb-2">Repuestos utilizados:</p>
                           <div className="space-y-1">
                             {service.parts.map((part: any, partIndex: number) => (
                               <div key={partIndex} className="flex justify-between text-sm">
-                                <span className="text-gray-600">
+                                <span className="text-white/60">
                                   {part.name} x{part.quantity}
                                 </span>
-                                <span className="text-gray-900">
+                                <span className="text-white">
                                   ${(part.price * part.quantity).toLocaleString("es-AR")}
                                 </span>
                               </div>
@@ -314,8 +321,8 @@ export default function VehicleDetailPage() {
 
                       {/* Notes */}
                       {service.notes && (
-                        <div className="mt-3 text-sm text-gray-600 bg-white rounded-lg p-3">
-                          <p className="font-medium text-gray-700 mb-1">Notas:</p>
+                        <div className="mt-3 text-sm text-white/60 glass-card bg-white/5 rounded-xl p-3">
+                          <p className="font-medium text-white/80 mb-1">Notas:</p>
                           <p>{service.notes}</p>
                         </div>
                       )}

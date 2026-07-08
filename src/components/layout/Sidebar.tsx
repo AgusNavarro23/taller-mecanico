@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Users,
   Car,
-  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -16,26 +15,10 @@ import {
 } from "lucide-react";
 
 const menuItems = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Clientes",
-    href: "/clients",
-    icon: Users,
-  },
-  {
-    label: "Vehículos",
-    href: "/vehicles",
-    icon: Car,
-  },
-  {
-    label: "Servicios",
-    href: "/services",
-    icon: Wrench,
-  },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Clientes", href: "/clients", icon: Users },
+  { label: "Vehículos", href: "/vehicles", icon: Car },
+  { label: "Servicios", href: "/services", icon: Wrench },
 ];
 
 interface SidebarProps {
@@ -51,29 +34,34 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-brand-black text-white z-50 sidebar-transition
+        className={`fixed top-0 left-0 h-full z-50 sidebar-transition
           ${isOpen ? "w-64" : "w-20"}
           hidden lg:flex flex-col`}
+        style={{
+          background: "linear-gradient(180deg, rgba(10,10,15,0.92) 0%, rgba(15,15,25,0.95) 100%)",
+          backdropFilter: "blur(30px)",
+          WebkitBackdropFilter: "blur(30px)",
+          borderRight: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "4px 0 24px rgba(0,0,0,0.4)",
+        }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-brand-gray-mid">
+        <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-brand-red rounded-lg flex items-center justify-center flex-shrink-0">
-              <Wrench className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 animate-pulse-glow"
+              style={{
+                background: "linear-gradient(135deg, rgba(220,38,38,0.8), rgba(153,27,27,0.9))",
+                border: "1px solid rgba(220,38,38,0.4)",
+              }}
+            >
+              <Wrench className="w-5 h-5 text-white" />
             </div>
             {isOpen && (
-              <span className="text-lg font-bold whitespace-nowrap">Taller Mecánico</span>
+              <span className="text-lg font-bold text-white tracking-tight">Taller Mecánico</span>
             )}
           </div>
-          <button
-            onClick={() => {}}
-            className="p-1 rounded-lg hover:bg-brand-gray-mid transition-colors"
-          >
-            {isOpen ? (
-              <ChevronLeft className="w-5 h-5" />
-            ) : (
-              <ChevronRight className="w-5 h-5" />
-            )}
+          <button className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+            {isOpen ? <ChevronLeft className="w-4 h-4 text-white/60" /> : <ChevronRight className="w-4 h-4 text-white/60" />}
           </button>
         </div>
 
@@ -86,15 +74,20 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? "bg-brand-red text-white"
-                        : "text-gray-300 hover:bg-brand-gray-mid hover:text-white"
+                    className={`flex items-center px-3 py-3 rounded-xl transition-all duration-300 group ${
+                      isActive ? "text-white" : "text-white/50 hover:text-white/80"
                     }`}
+                    style={isActive ? {
+                      background: "linear-gradient(135deg, rgba(220,38,38,0.25), rgba(220,38,38,0.1))",
+                      border: "1px solid rgba(220,38,38,0.3)",
+                      boxShadow: "0 4px 16px rgba(220,38,38,0.15)",
+                    } : {
+                      border: "1px solid transparent",
+                    }}
                     title={!isOpen ? item.label : undefined}
                   >
-                    <item.icon className={`w-5 h-5 flex-shrink-0 ${isOpen ? "mr-3" : "mx-auto"}`} />
-                    {isOpen && <span className="whitespace-nowrap">{item.label}</span>}
+                    <item.icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110 ${isOpen ? "mr-3" : "mx-auto"}`} />
+                    {isOpen && <span className="whitespace-nowrap font-medium">{item.label}</span>}
                   </Link>
                 </li>
               );
@@ -102,38 +95,47 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
           </ul>
         </nav>
 
-        {/* Bottom actions */}
-        <div className="border-t border-brand-gray-mid p-3">
+        {/* Bottom */}
+        <div className="p-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center w-full px-3 py-3 text-gray-300 hover:bg-brand-gray-mid hover:text-white rounded-lg transition-all duration-200"
+            className="flex items-center w-full px-3 py-3 text-white/50 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300 group"
             title={!isOpen ? "Cerrar sesión" : undefined}
           >
-            <LogOut className={`w-5 h-5 flex-shrink-0 ${isOpen ? "mr-3" : "mx-auto"}`} />
-            {isOpen && <span className="whitespace-nowrap">Cerrar sesión</span>}
+            <LogOut className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 group-hover:-translate-x-1 ${isOpen ? "mr-3" : "mx-auto"}`} />
+            {isOpen && <span className="whitespace-nowrap font-medium">Cerrar sesión</span>}
           </button>
         </div>
       </aside>
 
       {/* Mobile Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-brand-black text-white z-50 sidebar-transition transform
+        className={`fixed top-0 left-0 h-full w-72 z-50 sidebar-transition transform
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
           lg:hidden flex flex-col`}
+        style={{
+          background: "linear-gradient(180deg, rgba(10,10,15,0.96) 0%, rgba(15,15,25,0.98) 100%)",
+          backdropFilter: "blur(40px)",
+          WebkitBackdropFilter: "blur(40px)",
+          borderRight: "1px solid rgba(255,255,255,0.1)",
+          boxShadow: "4px 0 40px rgba(0,0,0,0.6)",
+        }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-brand-gray-mid">
+        <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-brand-red rounded-lg flex items-center justify-center">
-              <Wrench className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(220,38,38,0.8), rgba(153,27,27,0.9))",
+                border: "1px solid rgba(220,38,38,0.4)",
+              }}
+            >
+              <Wrench className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold">Taller Mecánico</span>
+            <span className="text-lg font-bold text-white">Taller Mecánico</span>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg hover:bg-brand-gray-mid transition-colors"
-          >
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+            <X className="w-5 h-5 text-white/60" />
           </button>
         </div>
 
@@ -147,11 +149,16 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
                   <Link
                     href={item.href}
                     onClick={onClose}
-                    className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? "bg-brand-red text-white"
-                        : "text-gray-300 hover:bg-brand-gray-mid hover:text-white"
+                    className={`flex items-center px-3 py-3 rounded-xl transition-all duration-300 ${
+                      isActive ? "text-white" : "text-white/50 hover:text-white/80"
                     }`}
+                    style={isActive ? {
+                      background: "linear-gradient(135deg, rgba(220,38,38,0.25), rgba(220,38,38,0.1))",
+                      border: "1px solid rgba(220,38,38,0.3)",
+                      boxShadow: "0 4px 16px rgba(220,38,38,0.15)",
+                    } : {
+                      border: "1px solid transparent",
+                    }}
                   >
                     <item.icon className="w-5 h-5 mr-3" />
                     <span>{item.label}</span>
@@ -162,11 +169,11 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
           </ul>
         </nav>
 
-        {/* Bottom actions */}
-        <div className="border-t border-brand-gray-mid p-3">
+        {/* Bottom */}
+        <div className="p-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center w-full px-3 py-3 text-gray-300 hover:bg-brand-gray-mid hover:text-white rounded-lg transition-all duration-200"
+            className="flex items-center w-full px-3 py-3 text-white/50 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300"
           >
             <LogOut className="w-5 h-5 mr-3" />
             <span>Cerrar sesión</span>

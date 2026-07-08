@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Wrench, Car, Calendar, DollarSign, Trash2, Edit, Clock, CheckCircle, AlertCircle, Package } from "lucide-react";
+import { Plus, Search, Wrench, Car, Calendar, DollarSign, Trash2, Edit, Clock, CheckCircle, AlertCircle, Package, X } from "lucide-react";
 
 interface Service {
   id: string;
@@ -161,13 +161,13 @@ export default function ServicesPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "PENDIENTE":
-        return <Clock className="w-4 h-4 text-yellow-600" />;
+        return <Clock className="w-4 h-4 text-yellow-400" />;
       case "EN_REPARACION":
-        return <Wrench className="w-4 h-4 text-blue-600" />;
+        return <Wrench className="w-4 h-4 text-blue-400" />;
       case "LISTO":
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
       case "ENTREGADO":
-        return <AlertCircle className="w-4 h-4 text-gray-600" />;
+        return <AlertCircle className="w-4 h-4 text-white/40" />;
       default:
         return null;
     }
@@ -180,7 +180,7 @@ export default function ServicesPage() {
       LISTO: "badge-listo",
       ENTREGADO: "badge-entregado",
     };
-    return badges[status] || "bg-gray-100 text-gray-800";
+    return badges[status] || "bg-white/10 text-white/60";
   };
 
   const filteredServices = services.filter(
@@ -195,18 +195,18 @@ export default function ServicesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-red"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-[#0a0a0f] min-h-screen p-6 rounded-3xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-brand-black">Servicios</h1>
-          <p className="text-gray-500 mt-1">Gestiona los servicios del taller</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Servicios</h1>
+          <p className="text-white/60 mt-1">Gestiona los servicios del taller</p>
         </div>
         <button
           onClick={() => {
@@ -223,7 +223,7 @@ export default function ServicesPage() {
             });
             setShowModal(true);
           }}
-          className="inline-flex items-center justify-center px-4 py-2 bg-brand-red hover:bg-brand-red-dark text-white font-medium rounded-lg transition-colors"
+          className="glass-btn inline-flex items-center justify-center px-4 py-2 text-white font-medium rounded-2xl transition-all"
         >
           <Plus className="w-5 h-5 mr-2" />
           Nuevo Servicio
@@ -232,50 +232,50 @@ export default function ServicesPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
         <input
           type="text"
           placeholder="Buscar por descripción, patente, marca o cliente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+          className="glass-input w-full pl-12 pr-4 py-3 text-white placeholder-white/40 rounded-2xl outline-none"
         />
       </div>
 
       {/* Services List */}
       {filteredServices.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <Wrench className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No se encontraron servicios</p>
+        <div className="glass-card text-center py-12 rounded-3xl">
+          <Wrench className="w-12 h-12 text-white/40 mx-auto mb-4" />
+          <p className="text-white/60">No se encontraron servicios</p>
         </div>
       ) : (
         <div className="space-y-4">
           {filteredServices.map((service) => (
             <div
               key={service.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 card-hover"
+              className="glass-card card-hover rounded-2xl p-4 md:p-6 transition-all"
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-brand-gray-dark rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Car className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-gray-dark text-white">
+                      <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-white/10 text-white">
                         {service.vehicle.plate}
                       </span>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(service.status)}`}>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${getStatusBadge(service.status)}`}>
                         {getStatusIcon(service.status)}
                         <span className="ml-1">{service.status.replace("_", " ")}</span>
                       </span>
                     </div>
-                    <h3 className="font-semibold text-brand-black">{service.description}</h3>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <h3 className="font-semibold text-white">{service.description}</h3>
+                    <p className="text-sm text-white/60 mt-1">
                       {service.vehicle.brand} {service.vehicle.model} • {service.vehicle.client.name}
                     </p>
                     {service.parts && service.parts.length > 0 && (
-                      <div className="flex items-center mt-2 text-sm text-gray-500">
+                      <div className="flex items-center mt-2 text-sm text-white/60">
                         <Package className="w-4 h-4 mr-1" />
                         {service.parts.length} repuesto{service.parts.length !== 1 ? "s" : ""}
                       </div>
@@ -284,7 +284,7 @@ export default function ServicesPage() {
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <div className="flex items-center space-x-4 text-sm text-white/60">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
                       {new Date(service.entryDate).toLocaleDateString("es-AR")}
@@ -299,23 +299,23 @@ export default function ServicesPage() {
 
                   <div className="flex items-center space-x-4">
                     <div className="text-right">
-                      <p className="text-lg font-bold text-brand-black">
+                      <p className="text-lg font-bold text-white">
                         ${Number(service.totalCost).toLocaleString("es-AR")}
                       </p>
-                      <p className="text-xs text-gray-500">Total</p>
+                      <p className="text-xs text-white/40">Total</p>
                     </div>
 
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => handleEdit(service)}
-                        className="p-2 text-gray-400 hover:text-brand-red hover:bg-brand-red-light rounded-lg transition-colors"
+                        className="p-2 text-white/40 hover:text-red-400 hover:bg-white/10 rounded-xl transition-all"
                         title="Editar"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(service.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-white/40 hover:text-red-500 hover:bg-white/10 rounded-xl transition-all"
                         title="Eliminar"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -331,25 +331,34 @@ export default function ServicesPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl my-8">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-brand-black">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="glass-card rounded-3xl w-full max-w-2xl shadow-2xl my-8 border border-white/10">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white">
                 {editingService ? "Editar Servicio" : "Nuevo Servicio"}
               </h2>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingService(null);
+                }}
+                className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vehículo *</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Vehículo *</label>
                 <select
                   value={formData.vehicleId}
                   onChange={(e) => setFormData({ ...formData, vehicleId: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                  className="glass-input w-full px-4 py-2 text-white rounded-2xl outline-none"
                   required
                 >
-                  <option value="">Seleccionar vehículo</option>
+                  <option value="" className="bg-[#0a0a0f]">Seleccionar vehículo</option>
                   {vehicles.map((vehicle) => (
-                    <option key={vehicle.id} value={vehicle.id}>
+                    <option key={vehicle.id} value={vehicle.id} className="bg-[#0a0a0f]">
                       {vehicle.plate} - {vehicle.brand} {vehicle.model}
                     </option>
                   ))}
@@ -357,11 +366,11 @@ export default function ServicesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Descripción *</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                  className="glass-input w-full px-4 py-2 text-white placeholder-white/40 rounded-2xl outline-none"
                   rows={3}
                   placeholder="Describe el trabajo realizado..."
                   required
@@ -370,26 +379,26 @@ export default function ServicesPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Estado *</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 text-white rounded-2xl outline-none"
                     required
                   >
-                    <option value="PENDIENTE">Pendiente</option>
-                    <option value="EN_REPARACION">En Reparación</option>
-                    <option value="LISTO">Listo</option>
-                    <option value="ENTREGADO">Entregado</option>
+                    <option value="PENDIENTE" className="bg-[#0a0a0f]">Pendiente</option>
+                    <option value="EN_REPARACION" className="bg-[#0a0a0f]">En Reparación</option>
+                    <option value="LISTO" className="bg-[#0a0a0f]">Listo</option>
+                    <option value="ENTREGADO" className="bg-[#0a0a0f]">Entregado</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Costo Mano de Obra *</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Costo Mano de Obra *</label>
                   <input
                     type="number"
                     value={formData.laborCost}
                     onChange={(e) => setFormData({ ...formData, laborCost: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 text-white rounded-2xl outline-none"
                     min="0"
                     step="0.01"
                     required
@@ -399,32 +408,32 @@ export default function ServicesPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Ingreso *</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Fecha de Ingreso *</label>
                   <input
                     type="date"
                     value={formData.entryDate}
                     onChange={(e) => setFormData({ ...formData, entryDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 text-white rounded-2xl outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Salida</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Fecha de Salida</label>
                   <input
                     type="date"
                     value={formData.exitDate}
                     onChange={(e) => setFormData({ ...formData, exitDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 text-white rounded-2xl outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Notas</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                  className="glass-input w-full px-4 py-2 text-white placeholder-white/40 rounded-2xl outline-none"
                   rows={2}
                   placeholder="Notas adicionales..."
                 />
@@ -433,11 +442,11 @@ export default function ServicesPage() {
               {/* Parts Section */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-gray-700">Repuestos</label>
+                  <label className="block text-sm font-medium text-white/80">Repuestos</label>
                   <button
                     type="button"
                     onClick={addPart}
-                    className="inline-flex items-center text-sm text-brand-red hover:text-brand-red-dark"
+                    className="inline-flex items-center text-sm text-red-400 hover:text-red-300 transition-colors"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Agregar repuesto
@@ -447,12 +456,12 @@ export default function ServicesPage() {
                 {formData.parts.length > 0 && (
                   <div className="space-y-3">
                     {formData.parts.map((part, index) => (
-                      <div key={index} className="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                      <div key={index} className="flex items-center space-x-2 bg-white/5 p-3 rounded-2xl border border-white/10">
                         <input
                           type="text"
                           value={part.name}
                           onChange={(e) => updatePart(index, "name", e.target.value)}
-                          className="flex-1 px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                          className="flex-1 px-3 py-1 bg-white/10 border border-white/10 text-white placeholder-white/40 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
                           placeholder="Nombre del repuesto"
                           required
                         />
@@ -460,7 +469,7 @@ export default function ServicesPage() {
                           type="number"
                           value={part.quantity}
                           onChange={(e) => updatePart(index, "quantity", e.target.value)}
-                          className="w-20 px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                          className="w-20 px-3 py-1 bg-white/10 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
                           min="1"
                           required
                         />
@@ -468,7 +477,7 @@ export default function ServicesPage() {
                           type="number"
                           value={part.price}
                           onChange={(e) => updatePart(index, "price", e.target.value)}
-                          className="w-24 px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                          className="w-24 px-3 py-1 bg-white/10 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
                           min="0"
                           step="0.01"
                           required
@@ -476,7 +485,7 @@ export default function ServicesPage() {
                         <button
                           type="button"
                           onClick={() => removePart(index)}
-                          className="p-1 text-gray-400 hover:text-red-600"
+                          className="p-1 text-white/40 hover:text-red-400 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -486,20 +495,20 @@ export default function ServicesPage() {
                 )}
               </div>
 
-              <div className="flex space-x-3 pt-4 border-t border-gray-100">
+              <div className="flex space-x-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     setEditingService(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="glass-btn-ghost flex-1 px-4 py-2 text-white rounded-2xl transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-brand-red hover:bg-brand-red-dark text-white rounded-lg transition-colors"
+                  className="glass-btn flex-1 px-4 py-2 text-white rounded-2xl transition-all"
                 >
                   {editingService ? "Guardar Cambios" : "Crear Servicio"}
                 </button>

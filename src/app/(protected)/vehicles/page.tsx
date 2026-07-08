@@ -139,18 +139,18 @@ export default function VehiclesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-red"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[rgba(220,38,38,0.8)]"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ backgroundColor: "#0a0a0f", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-brand-black">Vehículos</h1>
-          <p className="text-gray-500 mt-1">Gestiona los vehículos del taller</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Vehículos</h1>
+          <p className="text-white/60 mt-1">Gestiona los vehículos del taller</p>
         </div>
         <button
           onClick={() => {
@@ -166,7 +166,7 @@ export default function VehiclesPage() {
             });
             setShowModal(true);
           }}
-          className="inline-flex items-center justify-center px-4 py-2 bg-brand-red hover:bg-brand-red-dark text-white font-medium rounded-lg transition-colors"
+          className="glass-btn inline-flex items-center justify-center px-4 py-2 font-medium rounded-2xl transition-colors"
         >
           <Plus className="w-5 h-5 mr-2" />
           Nuevo Vehículo
@@ -175,80 +175,80 @@ export default function VehiclesPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
         <input
           type="text"
           placeholder="Buscar por patente, marca, modelo o cliente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+          className="glass-input w-full pl-10 pr-4 py-3 rounded-2xl outline-none"
         />
       </div>
 
       {/* Vehicles Table */}
       {filteredVehicles.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <Car className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No se encontraron vehículos</p>
+        <div className="glass-card text-center py-12 rounded-2xl">
+          <Car className="w-12 h-12 text-white/40 mx-auto mb-4" />
+          <p className="text-white/60">No se encontraron vehículos</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="glass-card rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="border-b border-white/10">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
                     Patente
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
                     Vehículo
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider hidden md:table-cell">
                     Cliente
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider hidden lg:table-cell">
                     Año
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider hidden lg:table-cell">
                     Servicios
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-white/10">
                 {filteredVehicles.map((vehicle) => (
-                  <tr key={vehicle.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={vehicle.id} className="card-hover transition-colors">
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-gray-dark text-white">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[rgba(220,38,38,0.2)] text-[rgba(220,38,38,1)]">
                         {vehicle.plate}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-brand-black">
+                        <p className="font-medium text-white">
                           {vehicle.brand} {vehicle.model}
                         </p>
                         {vehicle.color && (
-                          <p className="text-sm text-gray-500">{vehicle.color}</p>
+                          <p className="text-sm text-white/60">{vehicle.color}</p>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
-                      <div className="flex items-center text-sm text-gray-500">
+                      <div className="flex items-center text-sm text-white/60">
                         <User className="w-4 h-4 mr-2" />
                         {vehicle.client.name}
                       </div>
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <div className="flex items-center text-sm text-gray-500">
+                      <div className="flex items-center text-sm text-white/60">
                         <Calendar className="w-4 h-4 mr-2" />
                         {vehicle.year}
                       </div>
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-white/60">
                         {vehicle._count.services} servicio{vehicle._count.services !== 1 ? "s" : ""}
                       </span>
                     </td>
@@ -256,21 +256,21 @@ export default function VehiclesPage() {
                       <div className="flex items-center justify-end space-x-2">
                         <Link
                           href={`/vehicles/${vehicle.id}`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-white/40 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                           title="Ver historial"
                         >
                           <History className="w-4 h-4" />
                         </Link>
                         <button
                           onClick={() => handleEdit(vehicle)}
-                          className="p-2 text-gray-400 hover:text-brand-red hover:bg-brand-red-light rounded-lg transition-colors"
+                          className="p-2 text-white/40 hover:text-[rgba(220,38,38,1)] hover:bg-[rgba(220,38,38,0.1)] rounded-lg transition-colors"
                           title="Editar"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(vehicle.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Eliminar"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -287,44 +287,44 @@ export default function VehiclesPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-brand-black">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-card rounded-3xl w-full max-w-md shadow-2xl">
+            <div className="p-6 border-b border-white/10">
+              <h2 className="text-xl font-bold text-white">
                 {editingVehicle ? "Editar Vehículo" : "Nuevo Vehículo"}
               </h2>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Patente *</label>
+                <label className="block text-sm font-medium text-white/60 mb-1">Patente *</label>
                 <input
                   type="text"
                   value={formData.plate}
                   onChange={(e) => setFormData({ ...formData, plate: e.target.value.toUpperCase() })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none uppercase"
+                  className="glass-input w-full px-4 py-2 rounded-2xl outline-none uppercase"
                   placeholder="ABC123"
                   required
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Marca *</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Marca *</label>
                   <input
                     type="text"
                     value={formData.brand}
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 rounded-2xl outline-none"
                     placeholder="Toyota"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Modelo *</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Modelo *</label>
                   <input
                     type="text"
                     value={formData.model}
                     onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 rounded-2xl outline-none"
                     placeholder="Corolla"
                     required
                   />
@@ -332,34 +332,34 @@ export default function VehiclesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Año *</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Año *</label>
                   <input
                     type="number"
                     value={formData.year}
                     onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 rounded-2xl outline-none"
                     min="1900"
                     max={new Date().getFullYear() + 1}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                  <label className="block text-sm font-medium text-white/60 mb-1">Color</label>
                   <input
                     type="text"
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                    className="glass-input w-full px-4 py-2 rounded-2xl outline-none"
                     placeholder="Rojo"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+                <label className="block text-sm font-medium text-white/60 mb-1">Cliente *</label>
                 <select
                   value={formData.clientId}
                   onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none"
+                  className="glass-input w-full px-4 py-2 rounded-2xl outline-none"
                   required
                 >
                   <option value="">Seleccionar cliente</option>
@@ -377,13 +377,13 @@ export default function VehiclesPage() {
                     setShowModal(false);
                     setEditingVehicle(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="glass-btn-ghost flex-1 px-4 py-2 rounded-2xl transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-brand-red hover:bg-brand-red-dark text-white rounded-lg transition-colors"
+                  className="glass-btn flex-1 px-4 py-2 rounded-2xl transition-colors"
                 >
                   {editingVehicle ? "Guardar Cambios" : "Crear Vehículo"}
                 </button>

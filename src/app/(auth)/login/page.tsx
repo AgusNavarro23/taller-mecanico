@@ -26,21 +26,15 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
+      const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
         setError("Email o contraseña incorrectos");
       } else {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setError("Error al iniciar sesión");
     } finally {
       setLoading(false);
@@ -48,19 +42,29 @@ function LoginForm() {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-brand-red">
-      <h2 className="text-2xl font-bold text-center text-brand-black mb-6">
-        Iniciar Sesión
-      </h2>
+    <div className="glass-card rounded-3xl p-8 md:p-10">
+      <h2 className="text-2xl font-bold text-center text-white mb-8">Iniciar Sesión</h2>
 
       {error && (
-        <div className="bg-brand-red-light border border-brand-red text-brand-red-dark px-4 py-3 rounded-lg mb-4 text-sm">
+        <div className="rounded-2xl px-4 py-3 mb-5 text-sm font-medium"
+          style={{
+            background: "rgba(220, 38, 38, 0.15)",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
+            color: "#fca5a5",
+          }}
+        >
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm flex items-center">
+        <div className="rounded-2xl px-4 py-3 mb-5 text-sm font-medium flex items-center"
+          style={{
+            background: "rgba(16, 185, 129, 0.15)",
+            border: "1px solid rgba(16, 185, 129, 0.3)",
+            color: "#6ee7b7",
+          }}
+        >
           <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
           {success}
         </div>
@@ -68,16 +72,14 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-brand-gray-dark mb-2">
-            Email
-          </label>
+          <label className="block text-sm font-medium text-white/60 mb-2">Email</label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none transition-all"
+              className="glass-input w-full pl-12 pr-4 py-3.5 rounded-2xl"
               placeholder="tu@email.com"
               required
             />
@@ -85,23 +87,21 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-brand-gray-dark mb-2">
-            Contraseña
-          </label>
+          <label className="block text-sm font-medium text-white/60 mb-2">Contraseña</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none transition-all"
+              className="glass-input w-full pl-12 pr-12 py-3.5 rounded-2xl"
               placeholder="••••••••"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -111,7 +111,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand-red hover:bg-brand-red-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-primary"
+          className="glass-btn w-full py-3.5 rounded-2xl text-base font-semibold disabled:opacity-50"
         >
           {loading ? (
             <span className="flex items-center justify-center">
@@ -121,19 +121,17 @@ function LoginForm() {
               </svg>
               Ingresando...
             </span>
-          ) : (
-            "Ingresar"
-          )}
+          ) : "Ingresar"}
         </button>
       </form>
 
-      <div className="mt-6">
+      <div className="mt-7">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">O continúa con</span>
+            <span className="px-4 text-white/30">O continúa con</span>
           </div>
         </div>
 
@@ -141,7 +139,7 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+            className="glass-btn-ghost flex items-center justify-center py-3 rounded-2xl"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -151,11 +149,10 @@ function LoginForm() {
             </svg>
             <span className="ml-2">Google</span>
           </button>
-
           <button
             type="button"
             onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-            className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+            className="glass-btn-ghost flex items-center justify-center py-3 rounded-2xl"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
@@ -165,9 +162,9 @@ function LoginForm() {
         </div>
       </div>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-7 text-center text-sm text-white/40">
         ¿No tenés cuenta?{" "}
-        <Link href="/register" className="text-brand-red hover:text-brand-red-dark font-medium">
+        <Link href="/register" className="text-white/80 hover:text-white font-medium transition-colors">
           Registrate aquí
         </Link>
       </p>
@@ -177,21 +174,35 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-black via-brand-gray-dark to-brand-black p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      {/* Background orbs */}
+      <div className="absolute top-20 left-20 w-72 h-72 rounded-full animate-float opacity-20"
+        style={{ background: "radial-gradient(circle, rgba(220,38,38,0.4), transparent)" }}
+      />
+      <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full animate-float opacity-10"
+        style={{ background: "radial-gradient(circle, rgba(220,38,38,0.3), transparent)", animationDelay: "2s" }}
+      />
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-red rounded-full mb-4">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-5 animate-float"
+            style={{
+              background: "linear-gradient(135deg, rgba(220,38,38,0.7), rgba(153,27,27,0.8))",
+              border: "1px solid rgba(220,38,38,0.4)",
+              boxShadow: "0 8px 32px rgba(220,38,38,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+            }}
+          >
             <Wrench className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Taller Mecánico</h1>
-          <p className="text-gray-400 mt-2">Sistema de Gestión</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Taller Mecánico</h1>
+          <p className="text-white/40 mt-2">Sistema de Gestión</p>
         </div>
 
         <Suspense fallback={
-          <div className="bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-brand-red">
+          <div className="glass-card rounded-3xl p-10">
             <div className="flex items-center justify-center h-48">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-red"></div>
+              <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-red-500 animate-spin" />
             </div>
           </div>
         }>

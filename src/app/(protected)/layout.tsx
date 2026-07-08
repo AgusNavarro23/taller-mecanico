@@ -13,11 +13,25 @@ export default function ProtectedLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen" style={{ background: "#0a0a0f" }}>
+      {/* Background orbs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20 animate-float"
+          style={{ background: "radial-gradient(circle, rgba(220,38,38,0.3), transparent)" }}
+        />
+        <div className="absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full opacity-10 animate-float"
+          style={{ background: "radial-gradient(circle, rgba(220,38,38,0.2), transparent)", animationDelay: "3s" }}
+        />
+        <div className="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full opacity-15 animate-float"
+          style={{ background: "radial-gradient(circle, rgba(100,50,200,0.2), transparent)", animationDelay: "5s" }}
+        />
+      </div>
+
       {/* Mobile sidebar overlay */}
       {mobileSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 z-40 lg:hidden"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
@@ -31,7 +45,7 @@ export default function ProtectedLayout({
 
       {/* Main content */}
       <div
-        className={`transition-all duration-300 ${
+        className={`transition-all duration-300 relative z-10 ${
           sidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
