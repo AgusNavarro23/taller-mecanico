@@ -110,6 +110,19 @@ model ServiceEntry {
   @@map("service_entries")
 }
 
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  entityId  String?
+  entityType String?
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
 enum ServiceStatus {
   PENDIENTE
   EN_REPARACION

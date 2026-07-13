@@ -56,19 +56,19 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 relative">
-        <div className="w-full max-w-md relative z-10">
-          <div className="glass-card rounded-3xl p-10 text-center">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
+        <div className="w-full max-w-sm relative z-10">
+          <div className="glass-card rounded-2xl p-6 text-center">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
               style={{
                 background: "rgba(16, 185, 129, 0.2)",
                 border: "1px solid rgba(16, 185, 129, 0.3)",
               }}
             >
-              <CheckCircle className="w-8 h-8" style={{ color: "#34d399" }} />
+              <CheckCircle className="w-6 h-6" style={{ color: "#34d399" }} />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">¡Cuenta creada!</h2>
-            <p className="text-white/50 mb-4">Tu usuario se registró exitosamente.</p>
-            <p className="text-sm text-white/30">Redirigiendo al login...</p>
+            <h2 className="text-lg font-bold text-white mb-1">¡Cuenta creada!</h2>
+            <p className="text-white/50 text-sm mb-3">Tu usuario se registró exitosamente.</p>
+            <p className="text-xs text-white/30">Redirigiendo al login...</p>
           </div>
         </div>
       </div>
@@ -79,50 +79,50 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center p-4 relative">
       {/* Background orbs */}
       <div className="absolute top-20 right-20 w-72 h-72 rounded-full animate-float opacity-20"
-        style={{ background: "radial-gradient(circle, rgba(220,38,38,0.4), transparent)" }}
+        style={{ background: "radial-gradient(circle, rgba(6,182,212,0.4), transparent)" }}
       />
       <div className="absolute bottom-20 left-20 w-96 h-96 rounded-full animate-float opacity-10"
-        style={{ background: "radial-gradient(circle, rgba(220,38,38,0.3), transparent)", animationDelay: "3s" }}
+        style={{ background: "radial-gradient(circle, rgba(20,184,166,0.3), transparent)", animationDelay: "3s" }}
       />
 
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-5 animate-float"
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl mb-3 animate-float"
             style={{
-              background: "linear-gradient(135deg, rgba(220,38,38,0.7), rgba(153,27,27,0.8))",
-              border: "1px solid rgba(220,38,38,0.4)",
-              boxShadow: "0 8px 32px rgba(220,38,38,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+              background: "linear-gradient(135deg, rgba(6,182,212,0.7), rgba(8,145,178,0.8))",
+              border: "1px solid rgba(6,182,212,0.4)",
+              boxShadow: "0 8px 32px rgba(6,182,212,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
             }}
           >
-            <Wrench className="w-10 h-10 text-white" />
+            <Wrench className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Taller Mecánico</h1>
-          <p className="text-white/40 mt-2">Sistema de Gestión</p>
+          <h1 className="text-xl font-bold text-white tracking-tight">Taller Mecánico</h1>
+          <p className="text-white/40 mt-1 text-sm">Sistema de Gestión</p>
         </div>
 
         {/* Register Card */}
-        <div className="glass-card rounded-3xl p-8 md:p-10">
-          <h2 className="text-2xl font-bold text-center text-white mb-8">Crear Cuenta</h2>
+        <div className="glass-card rounded-2xl p-6">
+          <h2 className="text-lg font-bold text-center text-white mb-5">Crear Cuenta</h2>
 
           {error && (
-            <div className="rounded-2xl px-4 py-3 mb-5 text-sm font-medium"
-              style={{ background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.3)", color: "#fca5a5" }}
+            <div className="rounded-xl px-3 py-2 mb-4 text-xs font-medium"
+              style={{ background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.3)", color: "#fca5a5" }}
             >
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Nombre completo</label>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Nombre completo</label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="glass-input w-full pl-12 pr-4 py-3.5 rounded-2xl"
+                  className="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm"
                   placeholder="Tu nombre"
                   required
                   minLength={2}
@@ -131,14 +131,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Email</label>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="glass-input w-full pl-12 pr-4 py-3.5 rounded-2xl"
+                  className="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm"
                   placeholder="tu@email.com"
                   required
                 />
@@ -146,14 +146,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Contraseña</label>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Contraseña</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="glass-input w-full pl-12 pr-12 py-3.5 rounded-2xl"
+                  className="glass-input w-full pl-10 pr-10 py-2.5 rounded-xl text-sm"
                   placeholder="••••••••"
                   required
                   minLength={6}
@@ -161,41 +161,41 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="mt-1.5 text-xs text-white/30">Mínimo 6 caracteres</p>
+              <p className="mt-1 text-xs text-white/30">Mínimo 6 caracteres</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Confirmar Contraseña</label>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Confirmar Contraseña</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="glass-input w-full pl-12 pr-4 py-3.5 rounded-2xl"
+                  className="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm"
                   placeholder="••••••••"
                   required
                   minLength={6}
                 />
               </div>
               {confirmPassword && password !== confirmPassword && (
-                <p className="mt-1.5 text-xs" style={{ color: "#fca5a5" }}>Las contraseñas no coinciden</p>
+                <p className="mt-1 text-xs" style={{ color: "#fca5a5" }}>Las contraseñas no coinciden</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={loading || (confirmPassword !== "" && password !== confirmPassword)}
-              className="glass-btn w-full py-3.5 rounded-2xl text-base font-semibold disabled:opacity-50 mt-2"
+              className="glass-btn w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -205,7 +205,7 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="mt-7 text-center text-sm text-white/40">
+          <p className="mt-5 text-center text-xs text-white/40">
             ¿Ya tenés cuenta?{" "}
             <Link href="/login" className="text-white/80 hover:text-white font-medium transition-colors">
               Iniciá sesión
@@ -213,9 +213,9 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <div className="mt-5 text-center">
-          <Link href="/login" className="inline-flex items-center text-white/30 hover:text-white/60 transition-colors text-sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
+        <div className="mt-4 text-center">
+          <Link href="/login" className="inline-flex items-center text-white/30 hover:text-white/60 transition-colors text-xs">
+            <ArrowLeft className="w-3 h-3 mr-1" />
             Volver al login
           </Link>
         </div>

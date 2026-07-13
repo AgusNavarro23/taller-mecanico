@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET(
   req: Request,
@@ -72,6 +73,24 @@ export async function PUT(
       },
     });
 
+    const statusLabels: Record<string, string> = {
+      PENDIENTE: "Pendiente",
+      EN_REPARACION: "En Reparación",
+      LISTO: "Listo",
+      ENTREGADO: "Entregado",
+    };
+
+    if (body.status) {
+      const newStatus = statusLabels[body.status] || body.status;
+      await createNotification({
+        title: `Servicio actualizado`,
+        message: `${service.description} — ${service.vehicle.plate} cambió a "${newStatus}"`,
+        type: "status",
+        entityId: service.id,
+        entityType: "service",
+      });
+    }
+
     return NextResponse.json(service);
   } catch (error) {
     console.error("Error updating service:", error);
@@ -88,9 +107,21 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    await prisma.serviceEntry.delete({
+    const service = await prisma.serviceEntry.findUnique({
       where: { id },
+      include: { vehicle: true },
     });
+
+    await prisma.serviceEntry.delete({ where: { id } });
+
+    if (service) {
+      await createNotification({
+        title: "Servicio eliminado",
+        message: `${service.description} — ${service.vehicle.plate}`,
+        type: "delete",
+        entityType: "service",
+      });
+    }
 
     return NextResponse.json({ message: "Servicio eliminado" });
   } catch (error) {

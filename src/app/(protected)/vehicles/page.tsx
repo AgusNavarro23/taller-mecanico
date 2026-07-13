@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Car, User, Calendar, Edit, Trash2, History, X } from "lucide-react";
+import { Plus, Search, Car, User, Edit, Trash2, History } from "lucide-react";
 
 interface Vehicle {
   id: string;
@@ -80,17 +80,18 @@ export default function VehiclesPage() {
     fetchVehicles();
   };
 
-  const filtered = vehicles.filter((v) =>
-    v.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.client.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = vehicles.filter(
+    (v) =>
+      v.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 rounded-full border-2 border-white/20 border-t-red-500 animate-spin" />
+        <div className="w-10 h-10 rounded-full border-2 border-white/20 border-t-cyan-500 animate-spin" />
       </div>
     );
   }
@@ -124,85 +125,75 @@ export default function VehiclesPage() {
         />
       </div>
 
-      {/* Vehicles Cards */}
+      {/* Empty State */}
       {filtered.length === 0 ? (
         <div className="glass-card rounded-2xl text-center py-16">
           <Car className="w-14 h-14 text-white/15 mx-auto mb-4" />
           <p className="text-white/40 text-lg">No se encontraron vehículos</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        /* Cards Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((vehicle) => (
-            <div
-              key={vehicle.id}
-              className="glass-card rounded-2xl p-5 card-hover"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                {/* Icon */}
+            <div key={vehicle.id} className="glass-card card-hover rounded-2xl p-5">
+              <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: "linear-gradient(135deg, rgba(220,38,38,0.2), rgba(220,38,38,0.08))",
-                    border: "1px solid rgba(220,38,38,0.2)",
+                    background: "linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.08))",
+                    border: "1px solid rgba(6,182,212,0.2)",
                   }}
                 >
-                  <Car className="w-6 h-6 text-red-400/80" />
+                  <Car className="w-6 h-6 text-cyan-400/80" />
                 </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold tracking-wider"
-                      style={{
-                        background: "rgba(220,38,38,0.2)",
-                        border: "1px solid rgba(220,38,38,0.3)",
-                        color: "#f87171",
-                      }}
-                    >
-                      {vehicle.plate}
-                    </span>
-                    <span className="text-sm text-white/30">{vehicle.year}</span>
-                    {vehicle.color && <span className="text-sm text-white/30">{vehicle.color}</span>}
-                  </div>
-                  <p className="text-lg font-semibold text-white">
-                    {vehicle.brand} {vehicle.model}
-                  </p>
-                  <div className="flex items-center gap-4 mt-1">
-                    <span className="flex items-center text-sm text-white/40">
-                      <User className="w-4 h-4 mr-1.5" />
-                      {vehicle.client.name}
-                    </span>
-                    <span className="text-sm text-white/30">
-                      {vehicle._count.services} servicio{vehicle._count.services !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1">
                   <Link
                     href={`/vehicles/${vehicle.id}`}
-                    className="p-2.5 rounded-xl transition-all duration-200 hover:scale-110"
-                    style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.15)" }}
+                    className="p-2 rounded-xl text-white/40 hover:text-blue-400 hover:bg-white/10 transition-all"
                     title="Ver historial"
                   >
-                    <History className="w-4 h-4 text-blue-400" />
+                    <History className="w-4 h-4" />
                   </Link>
                   <button
                     onClick={() => handleEdit(vehicle)}
-                    className="p-2.5 rounded-xl transition-all duration-200 hover:scale-110"
-                    style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.15)" }}
+                    className="p-2 rounded-xl text-white/40 hover:text-cyan-400 hover:bg-white/10 transition-all"
                     title="Editar"
                   >
-                    <Edit className="w-4 h-4 text-red-400" />
+                    <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(vehicle.id)}
-                    className="p-2.5 rounded-xl transition-all duration-200 hover:scale-110"
-                    style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.15)" }}
+                    className="p-2 rounded-xl text-white/40 hover:text-red-400 hover:bg-white/10 transition-all"
                     title="Eliminar"
                   >
-                    <Trash2 className="w-4 h-4 text-red-300/60" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
+                </div>
+              </div>
+
+              <h3 className="text-lg font-semibold text-white mb-2">
+                {vehicle.brand} {vehicle.model}
+              </h3>
+
+              <div className="space-y-2 text-sm text-white/50">
+                <div className="flex items-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold tracking-wider mr-2"
+                    style={{
+                      background: "rgba(6,182,212,0.2)",
+                      border: "1px solid rgba(6,182,212,0.3)",
+                      color: "#67e8f9",
+                    }}
+                  >
+                    {vehicle.plate}
+                  </span>
+                  <span className="text-white/30">{vehicle.year}</span>
+                  {vehicle.color && <span className="text-white/30 ml-2">{vehicle.color}</span>}
+                </div>
+                <div className="flex items-center">
+                  <User className="w-4 h-4 mr-2 text-white/30" />
+                  {vehicle.client.name}
+                </div>
+                <div className="text-white/30">
+                  {vehicle._count.services} servicio{vehicle._count.services !== 1 ? "s" : ""}
                 </div>
               </div>
             </div>
@@ -212,26 +203,20 @@ export default function VehiclesPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
-        >
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="glass-card rounded-3xl w-full max-w-md">
-            {/* Header */}
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-xl font-bold text-white">
                 {editingVehicle ? "Editar Vehículo" : "Nuevo Vehículo"}
               </h2>
-              <button
-                onClick={() => { setShowModal(false); setEditingVehicle(null); }}
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors"
-              >
-                <X className="w-5 h-5 text-white/40" />
+              <button onClick={() => { setShowModal(false); setEditingVehicle(null); }} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span className="text-white/40 text-xl">&times;</span>
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/50 mb-2">Patente</label>
+                <label className="block text-sm font-medium text-white/50 mb-2">Patente *</label>
                 <input type="text" value={formData.plate}
                   onChange={(e) => setFormData({ ...formData, plate: e.target.value.toUpperCase() })}
                   className="glass-input w-full px-4 py-3 rounded-2xl uppercase tracking-wider"
@@ -241,14 +226,14 @@ export default function VehiclesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-white/50 mb-2">Marca</label>
+                  <label className="block text-sm font-medium text-white/50 mb-2">Marca *</label>
                   <input type="text" value={formData.brand}
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                     className="glass-input w-full px-4 py-3 rounded-2xl" placeholder="Toyota" required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-white/50 mb-2">Modelo</label>
+                  <label className="block text-sm font-medium text-white/50 mb-2">Modelo *</label>
                   <input type="text" value={formData.model}
                     onChange={(e) => setFormData({ ...formData, model: e.target.value })}
                     className="glass-input w-full px-4 py-3 rounded-2xl" placeholder="Corolla" required
@@ -258,7 +243,7 @@ export default function VehiclesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-white/50 mb-2">Año</label>
+                  <label className="block text-sm font-medium text-white/50 mb-2">Año *</label>
                   <input type="number" value={formData.year}
                     onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
                     className="glass-input w-full px-4 py-3 rounded-2xl"
@@ -275,7 +260,7 @@ export default function VehiclesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/50 mb-2">Cliente</label>
+                <label className="block text-sm font-medium text-white/50 mb-2">Cliente *</label>
                 <select value={formData.clientId}
                   onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
                   className="glass-input w-full px-4 py-3 rounded-2xl appearance-none cursor-pointer"

@@ -17,13 +17,13 @@ export default function ProtectedLayout({
       {/* Background orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20 animate-float"
-          style={{ background: "radial-gradient(circle, rgba(220,38,38,0.3), transparent)" }}
+          style={{ background: "radial-gradient(circle, rgba(6,182,212,0.3), transparent)" }}
         />
         <div className="absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full opacity-10 animate-float"
-          style={{ background: "radial-gradient(circle, rgba(220,38,38,0.2), transparent)", animationDelay: "3s" }}
+          style={{ background: "radial-gradient(circle, rgba(20,184,166,0.2), transparent)", animationDelay: "3s" }}
         />
         <div className="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full opacity-15 animate-float"
-          style={{ background: "radial-gradient(circle, rgba(100,50,200,0.2), transparent)", animationDelay: "5s" }}
+          style={{ background: "radial-gradient(circle, rgba(6,182,212,0.15), transparent)", animationDelay: "5s" }}
         />
       </div>
 

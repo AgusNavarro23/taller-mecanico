@@ -50,8 +50,8 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 animate-pulse-glow"
               style={{
-                background: "linear-gradient(135deg, rgba(220,38,38,0.8), rgba(153,27,27,0.9))",
-                border: "1px solid rgba(220,38,38,0.4)",
+                background: "linear-gradient(135deg, rgba(6,182,212,0.8), rgba(8,145,178,0.9))",
+                border: "1px solid rgba(6,182,212,0.4)",
               }}
             >
               <Wrench className="w-5 h-5 text-white" />
@@ -60,9 +60,6 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
               <span className="text-lg font-bold text-white tracking-tight">Taller Mecánico</span>
             )}
           </div>
-          <button className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-            {isOpen ? <ChevronLeft className="w-4 h-4 text-white/60" /> : <ChevronRight className="w-4 h-4 text-white/60" />}
-          </button>
         </div>
 
         {/* Navigation */}
@@ -78,9 +75,9 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
                       isActive ? "text-white" : "text-white/50 hover:text-white/80"
                     }`}
                     style={isActive ? {
-                      background: "linear-gradient(135deg, rgba(220,38,38,0.25), rgba(220,38,38,0.1))",
-                      border: "1px solid rgba(220,38,38,0.3)",
-                      boxShadow: "0 4px 16px rgba(220,38,38,0.15)",
+                      background: "linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.1))",
+                      border: "1px solid rgba(6,182,212,0.3)",
+                      boxShadow: "0 4px 16px rgba(6,182,212,0.15)",
                     } : {
                       border: "1px solid transparent",
                     }}
@@ -126,8 +123,8 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, rgba(220,38,38,0.8), rgba(153,27,27,0.9))",
-                border: "1px solid rgba(220,38,38,0.4)",
+                background: "linear-gradient(135deg, rgba(6,182,212,0.8), rgba(8,145,178,0.9))",
+                border: "1px solid rgba(6,182,212,0.4)",
               }}
             >
               <Wrench className="w-5 h-5 text-white" />
@@ -153,9 +150,9 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
                       isActive ? "text-white" : "text-white/50 hover:text-white/80"
                     }`}
                     style={isActive ? {
-                      background: "linear-gradient(135deg, rgba(220,38,38,0.25), rgba(220,38,38,0.1))",
-                      border: "1px solid rgba(220,38,38,0.3)",
-                      boxShadow: "0 4px 16px rgba(220,38,38,0.15)",
+                      background: "linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.1))",
+                      border: "1px solid rgba(6,182,212,0.3)",
+                      boxShadow: "0 4px 16px rgba(6,182,212,0.15)",
                     } : {
                       border: "1px solid transparent",
                     }}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET(
   req: Request,
@@ -74,9 +75,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    await prisma.vehicle.delete({
-      where: { id },
-    });
+    const vehicle = await prisma.vehicle.findUnique({ where: { id } });
+    await prisma.vehicle.delete({ where: { id } });
+
+    if (vehicle) {
+      await createNotification({
+        title: "Vehículo eliminado",
+        message: `${vehicle.brand} ${vehicle.model} — Patente: ${vehicle.plate}`,
+        type: "delete",
+        entityType: "vehicle",
+      });
+    }
 
     return NextResponse.json({ message: "Vehículo eliminado" });
   } catch (error) {

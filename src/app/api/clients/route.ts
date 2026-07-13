@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { clientSchema } from "@/lib/validations";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET() {
   try {
@@ -36,6 +37,14 @@ export async function POST(req: Request) {
         address: data.address || null,
         dni: data.dni || null,
       },
+    });
+
+    await createNotification({
+      title: "Nuevo cliente registrado",
+      message: `${client.name} — DNI: ${client.dni || "N/A"}`,
+      type: "client",
+      entityId: client.id,
+      entityType: "client",
     });
 
     return NextResponse.json(client, { status: 201 });

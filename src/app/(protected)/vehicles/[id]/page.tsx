@@ -114,7 +114,7 @@ export default function VehicleDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="w-10 h-10 rounded-full border-2 border-white/20 border-t-cyan-500 animate-spin" />
       </div>
     );
   }
@@ -154,7 +154,7 @@ export default function VehicleDetailPage() {
         </div>
         <Link
           href={`/services?vehicleId=${vehicle.id}`}
-          className="glass-btn inline-flex items-center justify-center"
+          className="glass-btn inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
         >
           <Wrench className="w-5 h-5 mr-2" />
           Nuevo Servicio
@@ -189,7 +189,12 @@ export default function VehicleDetailPage() {
           <div className="glass-card bg-white/5 rounded-2xl p-4">
             <h3 className="text-sm font-medium text-white/60 mb-2">Propietario</h3>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(135deg, rgba(6,182,212,0.3), rgba(8,145,178,0.4))",
+                  border: "1px solid rgba(6,182,212,0.3)",
+                }}
+              >
                 <User className="w-5 h-5 text-white" />
               </div>
               <div>

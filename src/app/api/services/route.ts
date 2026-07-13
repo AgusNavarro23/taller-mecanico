@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { serviceSchema } from "@/lib/validations";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET(req: Request) {
   try {
@@ -62,6 +63,21 @@ export async function POST(req: Request) {
           },
         },
       },
+    });
+
+    const statusLabels: Record<string, string> = {
+      PENDIENTE: "Pendiente",
+      EN_REPARACION: "En Reparación",
+      LISTO: "Listo",
+      ENTREGADO: "Entregado",
+    };
+
+    await createNotification({
+      title: "Nuevo servicio registrado",
+      message: `${service.description} — ${service.vehicle.plate} (${service.vehicle.brand} ${service.vehicle.model})`,
+      type: "service",
+      entityId: service.id,
+      entityType: "service",
     });
 
     return NextResponse.json(service, { status: 201 });

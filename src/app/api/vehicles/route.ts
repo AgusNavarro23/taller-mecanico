@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { vehicleSchema } from "@/lib/validations";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET() {
   try {
@@ -42,6 +43,14 @@ export async function POST(req: Request) {
       include: {
         client: true,
       },
+    });
+
+    await createNotification({
+      title: "Nuevo vehículo registrado",
+      message: `${vehicle.brand} ${vehicle.model} — Patente: ${vehicle.plate}`,
+      type: "vehicle",
+      entityId: vehicle.id,
+      entityType: "vehicle",
     });
 
     return NextResponse.json(vehicle, { status: 201 });

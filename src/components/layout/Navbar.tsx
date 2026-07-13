@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Menu, Bell, User } from "lucide-react";
+import { Menu, User } from "lucide-react";
+import NotificationDropdown from "@/components/notifications/NotificationDropdown";
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -31,12 +32,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
 
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <button className="relative p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full animate-pulse"
-              style={{ background: "linear-gradient(135deg, #dc2626, #ef4444)" }}
-            />
-          </button>
+          <NotificationDropdown />
 
           {/* User */}
           <div className="flex items-center space-x-3">
@@ -51,8 +47,8 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, rgba(220,38,38,0.3), rgba(153,27,27,0.4))",
-                border: "1px solid rgba(220,38,38,0.3)",
+                background: "linear-gradient(135deg, rgba(6,182,212,0.3), rgba(8,145,178,0.4))",
+                border: "1px solid rgba(6,182,212,0.3)",
               }}
             >
               {session?.user?.image ? (

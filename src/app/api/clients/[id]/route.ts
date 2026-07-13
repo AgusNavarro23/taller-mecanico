@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET(
   req: Request,
@@ -66,9 +67,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    await prisma.client.delete({
-      where: { id },
-    });
+    const client = await prisma.client.findUnique({ where: { id } });
+    await prisma.client.delete({ where: { id } });
+
+    if (client) {
+      await createNotification({
+        title: "Cliente eliminado",
+        message: `${client.name}`,
+        type: "delete",
+        entityType: "client",
+      });
+    }
 
     return NextResponse.json({ message: "Cliente eliminado" });
   } catch (error) {
