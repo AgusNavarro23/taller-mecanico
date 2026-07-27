@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Wrench, Mail, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -193,9 +194,9 @@ export default function LoginPage() {
               boxShadow: "0 8px 32px rgba(6,182,212,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
             }}
           >
-            <Wrench className="w-7 h-7 text-white" />
+            <Image src="/Rocko.jpeg" alt="Taller Rocko" width={36} height={36} className="rounded-lg object-cover" />
           </div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Taller Mecánico</h1>
+          <h1 className="text-xl font-bold text-white tracking-tight">Taller Rocko</h1>
           <p className="text-white/40 mt-1 text-sm">Sistema de Gestión</p>
         </div>
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Wrench, Car, Calendar, DollarSign, Trash2, Edit, Clock, CheckCircle, AlertCircle, Package } from "lucide-react";
+import { Plus, Search, Wrench, Car, Calendar, DollarSign, Trash2, Edit, Clock, CheckCircle, AlertCircle, Package, FileText } from "lucide-react";
+import { generateServiceInvoicePDF } from "@/lib/pdf";
 
 interface Service {
   id: string;
@@ -19,7 +20,7 @@ interface Service {
     plate: string;
     brand: string;
     model: string;
-    client: { name: string };
+    client: { name: string; phone: string | null; email: string | null };
   };
 }
 
@@ -103,6 +104,14 @@ export default function ServicesPage() {
     if (!confirm("¿Eliminar este servicio?")) return;
     await fetch(`/api/services/${id}`, { method: "DELETE" });
     fetchServices();
+  };
+
+  const handleDownloadInvoice = (service: Service) => {
+    generateServiceInvoicePDF(
+      service,
+      { plate: service.vehicle.plate, brand: service.vehicle.brand, model: service.vehicle.model, year: 0 },
+      { name: service.vehicle.client.name, phone: service.vehicle.client.phone, email: service.vehicle.client.email }
+    );
   };
 
   const addPart = () => setFormData({ ...formData, parts: [...formData.parts, { name: "", quantity: 1, price: 0 }] });
@@ -206,6 +215,13 @@ export default function ServicesPage() {
                   <Wrench className="w-6 h-6 text-cyan-400/80" />
                 </div>
                 <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleDownloadInvoice(service)}
+                    className="p-2 rounded-xl text-white/40 hover:text-cyan-400 hover:bg-white/10 transition-all"
+                    title="Descargar factura"
+                  >
+                    <FileText className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => handleEdit(service)}
                     className="p-2 rounded-xl text-white/40 hover:text-cyan-400 hover:bg-white/10 transition-all"

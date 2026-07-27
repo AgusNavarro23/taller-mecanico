@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Car, User, Calendar, Clock, Wrench, CheckCircle, Package, DollarSign, Edit } from "lucide-react";
+import { ArrowLeft, Car, User, Calendar, Clock, Wrench, CheckCircle, Package, DollarSign, Edit, Download, FileText } from "lucide-react";
+import { generateVehicleHistoryPDF, generateServiceInvoicePDF } from "@/lib/pdf";
 
 interface Vehicle {
   id: string;
@@ -68,6 +69,22 @@ export default function VehicleDetailPage() {
       console.error("Error fetching vehicle data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadHistory = () => {
+    if (vehicle) {
+      generateVehicleHistoryPDF(vehicle, services);
+    }
+  };
+
+  const handleDownloadInvoice = (service: Service) => {
+    if (vehicle) {
+      generateServiceInvoicePDF(
+        service,
+        { plate: vehicle.plate, brand: vehicle.brand, model: vehicle.model, year: vehicle.year },
+        { name: vehicle.client.name, phone: vehicle.client.phone, email: vehicle.client.email }
+      );
     }
   };
 
@@ -137,7 +154,7 @@ export default function VehicleDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => router.back()}
@@ -152,13 +169,22 @@ export default function VehicleDetailPage() {
             <p className="text-white/60 mt-1">Historial de servicios</p>
           </div>
         </div>
-        <Link
-          href={`/services?vehicleId=${vehicle.id}`}
-          className="glass-btn inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
-        >
-          <Wrench className="w-5 h-5 mr-2" />
-          Nuevo Servicio
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={handleDownloadHistory}
+            className="glass-btn-ghost inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Historial PDF
+          </button>
+          <Link
+            href={`/services?vehicleId=${vehicle.id}`}
+            className="glass-btn inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
+          >
+            <Wrench className="w-5 h-5 mr-2" />
+            Nuevo Servicio
+          </Link>
+        </div>
       </div>
 
       {/* Vehicle Info Card */}
@@ -284,10 +310,17 @@ export default function VehicleDetailPage() {
                           </div>
                           <h3 className="font-semibold text-white">{service.description}</h3>
                         </div>
-                        <div className="text-right">
+                        <div className="flex items-center gap-2">
                           <p className="text-lg font-bold text-white">
                             ${Number(service.totalCost).toLocaleString("es-AR")}
                           </p>
+                          <button
+                            onClick={() => handleDownloadInvoice(service)}
+                            className="p-2 rounded-xl text-white/40 hover:text-cyan-400 hover:bg-white/10 transition-all"
+                            title="Descargar factura"
+                          >
+                            <FileText className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
 

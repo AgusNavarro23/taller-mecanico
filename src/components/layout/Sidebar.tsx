@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
@@ -48,16 +49,16 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 animate-pulse-glow"
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 animate-pulse-glow overflow-hidden"
               style={{
                 background: "linear-gradient(135deg, rgba(6,182,212,0.8), rgba(8,145,178,0.9))",
                 border: "1px solid rgba(6,182,212,0.4)",
               }}
             >
-              <Wrench className="w-5 h-5 text-white" />
+              <Image src="/Rocko.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
             </div>
             {isOpen && (
-              <span className="text-lg font-bold text-white tracking-tight">Taller Mecánico</span>
+              <span className="text-lg font-bold text-white tracking-tight">Taller Rocko</span>
             )}
           </div>
         </div>
@@ -121,15 +122,15 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden"
               style={{
                 background: "linear-gradient(135deg, rgba(6,182,212,0.8), rgba(8,145,178,0.9))",
                 border: "1px solid rgba(6,182,212,0.4)",
               }}
             >
-              <Wrench className="w-5 h-5 text-white" />
+              <Image src="/Rocko.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
             </div>
-            <span className="text-lg font-bold text-white">Taller Mecánico</span>
+            <span className="text-lg font-bold text-white">Taller Rocko</span>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
             <X className="w-5 h-5 text-white/60" />
