@@ -37,11 +37,16 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Contraseña incorrecta");
         }
 
+        if (!user.approved) {
+          throw new Error("Tu cuenta está pendiente de aprobación del administrador");
+        }
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
+          role: user.role,
         };
       },
     }),
@@ -64,14 +69,70 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as any).role;
+      }
+      if (token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { role: true, approved: true },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.approved = dbUser.approved;
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
+        (session.user as any).approved = token.approved;
       }
       return session;
+    },
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "github") {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+        if (!dbUser) {
+          const userCount = await prisma.user.count();
+          const isFirstUser = userCount === 0;
+
+          const newUser = await prisma.user.create({
+            data: {
+              email: user.email!,
+              name: user.name || user.email!.split("@")[0],
+              image: user.image,
+              role: isFirstUser ? "ADMIN" : "USER",
+              approved: isFirstUser,
+            },
+          });
+
+          user.id = newUser.id;
+          (user as any).role = newUser.role;
+
+          if (!isFirstUser) {
+            const { createNotification } = await import("@/lib/notifications");
+            const admins = await prisma.user.findMany({
+              where: { role: "ADMIN", approved: true },
+            });
+            for (const admin of admins) {
+              await createNotification({
+                title: "Nuevo registro pendiente",
+                message: `${newUser.name} (${newUser.email}) se registró via ${account.provider} y espera aprobación.`,
+                type: "registration",
+                entityId: newUser.id,
+                entityType: "user",
+              });
+            }
+          }
+        } else {
+          (user as any).role = dbUser.role;
+        }
+      }
+      return true;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

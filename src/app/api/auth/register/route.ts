@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { createNotification } from "@/lib/notifications";
 
 const registerSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -25,6 +26,9 @@ export async function POST(req: Request) {
       );
     }
 
+    const userCount = await prisma.user.count();
+    const isFirstUser = userCount === 0;
+
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
@@ -32,11 +36,41 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
+        role: isFirstUser ? "ADMIN" : "USER",
+        approved: isFirstUser,
       },
     });
 
+    if (isFirstUser) {
+      await createNotification({
+        title: "Administrador creado",
+        message: `${name} (${email}) se registró como administrador del sistema.`,
+        type: "admin",
+      });
+    } else {
+      const admins = await prisma.user.findMany({
+        where: { role: "ADMIN", approved: true },
+      });
+
+      for (const admin of admins) {
+        await createNotification({
+          title: "Nuevo registro pendiente",
+          message: `${name} (${email}) se registró y espera aprobación.`,
+          type: "registration",
+          entityId: user.id,
+          entityType: "user",
+        });
+      }
+    }
+
     return NextResponse.json(
-      { message: "Usuario creado exitosamente", userId: user.id },
+      {
+        message: isFirstUser
+          ? "Administrador creado exitosamente. Ya podés iniciar sesión."
+          : "Usuario creado exitosamente. Esperá la aprobación del administrador.",
+        userId: user.id,
+        isFirstUser,
+      },
       { status: 201 }
     );
   } catch (error) {

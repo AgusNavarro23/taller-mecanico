@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Shield,
 } from "lucide-react";
 
 const menuItems = [
@@ -26,10 +27,15 @@ interface SidebarProps {
   isOpen: boolean;
   mobileOpen: boolean;
   onClose: () => void;
+  userRole?: string;
 }
 
-export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: SidebarProps) {
   const pathname = usePathname();
+  const isAdmin = userRole === "ADMIN";
+  const allMenuItems = isAdmin
+    ? [...menuItems, { label: "Admin", href: "/admin/users", icon: Shield }]
+    : menuItems;
 
   return (
     <>
@@ -66,7 +72,7 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-1 px-3">
-            {menuItems.map((item) => {
+            {allMenuItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
                 <li key={item.href}>
@@ -140,7 +146,7 @@ export default function Sidebar({ isOpen, mobileOpen, onClose }: SidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-1 px-3">
-            {menuItems.map((item) => {
+            {allMenuItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
                 <li key={item.href}>

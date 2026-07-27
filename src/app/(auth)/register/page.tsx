@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isFirstUser, setIsFirstUser] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +42,10 @@ export default function RegisterPage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        setIsFirstUser(data.isFirstUser);
         setSuccess(true);
-        setTimeout(() => router.push("/login?registered=true"), 2000);
+        setTimeout(() => router.push("/login?registered=true"), 3000);
       } else {
         const data = await response.json();
         setError(data.error || "Error al crear el usuario");
@@ -61,14 +64,27 @@ export default function RegisterPage() {
           <div className="glass-card rounded-2xl p-6 text-center">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
               style={{
-                background: "rgba(16, 185, 129, 0.2)",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
+                background: isFirstUser
+                  ? "rgba(139, 92, 246, 0.2)"
+                  : "rgba(234, 179, 8, 0.2)",
+                border: `1px solid ${isFirstUser ? "rgba(139, 92, 246, 0.3)" : "rgba(234, 179, 8, 0.3)"}`,
               }}
             >
-              <CheckCircle className="w-6 h-6" style={{ color: "#34d399" }} />
+              <CheckCircle className="w-6 h-6" style={{ color: isFirstUser ? "#a78bfa" : "#fbbf24" }} />
             </div>
-            <h2 className="text-lg font-bold text-white mb-1">¡Cuenta creada!</h2>
-            <p className="text-white/50 text-sm mb-3">Tu usuario se registró exitosamente.</p>
+            <h2 className="text-lg font-bold text-white mb-1">
+              {isFirstUser ? "¡Administrador creado!" : "¡Cuenta creada!"}
+            </h2>
+            <p className="text-white/50 text-sm mb-3">
+              {isFirstUser
+                ? "Sos el administrador del sistema. Ya podés iniciar sesión."
+                : "Tu cuenta fue creada. Está pendiente de aprobación del administrador."}
+            </p>
+            {!isFirstUser && (
+              <p className="text-xs text-white/40 mb-3">
+                Te notificaremos cuando puedas iniciar sesión.
+              </p>
+            )}
             <p className="text-xs text-white/30">Redirigiendo al login...</p>
           </div>
         </div>

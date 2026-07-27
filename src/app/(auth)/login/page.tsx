@@ -30,7 +30,11 @@ function LoginForm() {
     try {
       const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
-        setError("Email o contraseña incorrectos");
+        if (result.error.includes("pendiente de aprobación")) {
+          setError("Tu cuenta está pendiente de aprobación del administrador. Contactá al administrador del taller.");
+        } else {
+          setError("Email o contraseña incorrectos");
+        }
       } else {
         router.push("/dashboard");
         router.refresh();

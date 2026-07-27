@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 
@@ -9,6 +10,7 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -41,6 +43,7 @@ export default function ProtectedLayout({
         isOpen={sidebarOpen}
         mobileOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
+        userRole={(session?.user as any)?.role}
       />
 
       {/* Main content */}
