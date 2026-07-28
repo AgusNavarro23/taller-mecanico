@@ -55,13 +55,8 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: Sideb
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 animate-pulse-glow overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, rgba(6,182,212,0.8), rgba(8,145,178,0.9))",
-                border: "1px solid rgba(6,182,212,0.4)",
-              }}
-            >
-              <Image src="/Logo.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <Image src="/Logo.jpeg" alt="Taller Rocko" width={48} height={48} className="rounded-xl object-cover" />
             </div>
             {isOpen && (
               <span className="text-lg font-bold text-white tracking-tight">Taller Rocko</span>
@@ -128,13 +123,8 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: Sideb
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, rgba(6,182,212,0.8), rgba(8,145,178,0.9))",
-                border: "1px solid rgba(6,182,212,0.4)",
-              }}
-            >
-              <Image src="/Logo.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden">
+              <Image src="/Logo.jpeg" alt="Taller Rocko" width={48} height={48} className="rounded-xl object-cover" />
             </div>
             <span className="text-lg font-bold text-white">Taller Rocko</span>
           </div>

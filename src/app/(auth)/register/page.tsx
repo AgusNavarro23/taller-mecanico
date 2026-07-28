@@ -105,14 +105,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl mb-3 animate-float"
-            style={{
-              background: "linear-gradient(135deg, rgba(6,182,212,0.7), rgba(8,145,178,0.8))",
-              border: "1px solid rgba(6,182,212,0.4)",
-              boxShadow: "0 8px 32px rgba(6,182,212,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
-            }}
-          >
-            <Image src="/Logo.jpeg" alt="Taller Rocko" width={36} height={36} className="rounded-lg object-cover" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl mb-3 animate-float overflow-hidden">
+            <Image src="/Logo.jpeg" alt="Taller Rocko" width={80} height={80} className="rounded-xl object-cover" />
           </div>
           <h1 className="text-xl font-bold text-white tracking-tight">Taller Rocko</h1>
           <p className="text-white/40 mt-1 text-sm">Sistema de Gestión</p>
