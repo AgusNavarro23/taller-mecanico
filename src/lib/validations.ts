@@ -29,7 +29,7 @@ export const serviceSchema = z.object({
   entryDate: z.string().min(1, "La fecha de ingreso es requerida"),
   exitDate: z.string().optional(),
   laborCost: z.number().min(0, "El costo no puede ser negativo"),
-  partsCost: z.number().min(0, "El costo no puede ser negativo"),
+  partsCost: z.number().min(0, "El costo no puede ser negativo").optional().default(0),
   notes: z.string().optional(),
   parts: z.array(z.object({
     name: z.string().min(1, "El nombre del repuesto es requerido"),
