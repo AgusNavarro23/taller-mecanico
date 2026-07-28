@@ -58,11 +58,11 @@ export async function GET() {
       deliveredServices,
       totalRevenue,
       recentServices,
-      servicesByArea: servicesByArea.map((s) => ({
+      servicesByArea: servicesByArea.map((s: { repairArea: string | null; _count: { id: number } }) => ({
         area: s.repairArea || "Sin especificar",
         count: s._count.id,
       })),
-      vehiclesByBrand: vehiclesByBrand.map((v) => ({
+      vehiclesByBrand: vehiclesByBrand.map((v: { brand: string; _count: { id: number } }) => ({
         brand: v.brand,
         count: v._count.id,
       })),
