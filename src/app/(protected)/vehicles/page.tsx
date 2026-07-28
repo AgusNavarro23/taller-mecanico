@@ -30,7 +30,7 @@ export default function VehiclesPage() {
   const [formData, setFormData] = useState({
     plate: "", brand: "", model: "",
     year: new Date().getFullYear(),
-    color: "", vin: "", clientId: "",
+    color: "", vin: "", mileage: "", clientId: "",
   });
 
   useEffect(() => { fetchVehicles(); fetchClients(); }, []);
@@ -57,12 +57,12 @@ export default function VehiclesPage() {
       const res = await fetch(url, {
         method: editingVehicle ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, year: Number(formData.year) }),
+        body: JSON.stringify({ ...formData, year: Number(formData.year), mileage: formData.mileage ? Number(formData.mileage) : undefined }),
       });
       if (res.ok) {
         setShowModal(false);
         setEditingVehicle(null);
-        setFormData({ plate: "", brand: "", model: "", year: new Date().getFullYear(), color: "", vin: "", clientId: "" });
+        setFormData({ plate: "", brand: "", model: "", year: new Date().getFullYear(), color: "", vin: "", mileage: "", clientId: "" });
         fetchVehicles();
       }
     } catch (e) { console.error(e); }
@@ -70,7 +70,7 @@ export default function VehiclesPage() {
 
   const handleEdit = (v: Vehicle) => {
     setEditingVehicle(v);
-    setFormData({ plate: v.plate, brand: v.brand, model: v.model, year: v.year, color: v.color || "", vin: "", clientId: v.client.id });
+    setFormData({ plate: v.plate, brand: v.brand, model: v.model, year: v.year, color: v.color || "", vin: "", mileage: "", clientId: v.client.id });
     setShowModal(true);
   };
 
@@ -105,7 +105,7 @@ export default function VehiclesPage() {
           <p className="text-white/40 mt-1">Gestiona los vehículos del taller</p>
         </div>
         <button
-          onClick={() => { setEditingVehicle(null); setFormData({ plate: "", brand: "", model: "", year: new Date().getFullYear(), color: "", vin: "", clientId: "" }); setShowModal(true); }}
+          onClick={() => { setEditingVehicle(null); setFormData({ plate: "", brand: "", model: "", year: new Date().getFullYear(), color: "", vin: "", mileage: "", clientId: "" }); setShowModal(true); }}
           className="glass-btn inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
         >
           <Plus className="w-5 h-5 mr-2" />
@@ -257,6 +257,14 @@ export default function VehiclesPage() {
                     className="glass-input w-full px-4 py-3 rounded-2xl" placeholder="Rojo"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/50 mb-2">Kilometraje (km)</label>
+                <input type="number" value={formData.mileage}
+                  onChange={(e) => setFormData({ ...formData, mileage: e.target.value })}
+                  className="glass-input w-full px-4 py-3 rounded-2xl" placeholder="0" min="0"
+                />
               </div>
 
               <div>

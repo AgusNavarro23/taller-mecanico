@@ -14,7 +14,13 @@ interface Stats {
   deliveredServices: number;
   totalRevenue: number;
   recentServices: any[];
+  servicesByArea: { area: string; count: number }[];
+  vehiclesByBrand: { brand: string; count: number }[];
 }
+
+const CHART_COLORS = [
+  "#06b6d4", "#0891b2", "#22d3ee", "#67e8f9", "#a5f3fc", "#0e7490",
+];
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -70,6 +76,9 @@ export default function DashboardPage() {
     return b[status] || "";
   };
 
+  const totalByArea = stats.servicesByArea.reduce((sum, a) => sum + a.count, 0);
+  const maxBrandCount = Math.max(...stats.vehiclesByBrand.map((v) => v.count), 1);
+
   return (
     <div className="space-y-6">
       <div>
@@ -122,6 +131,92 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Pie Chart - Servicios por Zona */}
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Servicios por Zona de Reparación</h3>
+          {stats.servicesByArea.length === 0 ? (
+            <p className="text-white/40 text-center py-8">Sin datos disponibles</p>
+          ) : (
+            <div className="flex items-center gap-6">
+              {/* Donut */}
+              <div className="relative w-40 h-40 flex-shrink-0">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  {(() => {
+                    let cumulative = 0;
+                    return stats.servicesByArea.map((item, i) => {
+                      const pct = (item.count / totalByArea) * 100;
+                      const dasharray = `${pct} ${100 - pct}`;
+                      const dashoffset = 100 - cumulative;
+                      cumulative += pct;
+                      return (
+                        <circle
+                          key={item.area}
+                          cx="18" cy="18" r="15.9155"
+                          fill="none"
+                          stroke={CHART_COLORS[i % CHART_COLORS.length]}
+                          strokeWidth="3.5"
+                          strokeDasharray={dasharray}
+                          strokeDashoffset={dashoffset}
+                          className="transition-all duration-500"
+                        />
+                      );
+                    });
+                  })()}
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-white">{totalByArea}</p>
+                    <p className="text-xs text-white/40">Total</p>
+                  </div>
+                </div>
+              </div>
+              {/* Legend */}
+              <div className="flex-1 space-y-2">
+                {stats.servicesByArea.map((item, i) => (
+                  <div key={item.area} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                      <span className="text-white/70">{item.area}</span>
+                    </div>
+                    <span className="text-white font-medium">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bar Chart - Vehículos por Marca */}
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Vehículos por Marca</h3>
+          {stats.vehiclesByBrand.length === 0 ? (
+            <p className="text-white/40 text-center py-8">Sin datos disponibles</p>
+          ) : (
+            <div className="space-y-3">
+              {stats.vehiclesByBrand.map((item, i) => (
+                <div key={item.brand} className="flex items-center gap-3">
+                  <span className="text-sm text-white/70 w-28 text-right truncate">{item.brand}</span>
+                  <div className="flex-1 h-7 bg-white/5 rounded-lg overflow-hidden">
+                    <div
+                      className="h-full rounded-lg transition-all duration-500 flex items-center px-2"
+                      style={{
+                        width: `${(item.count / maxBrandCount) * 100}%`,
+                        background: `linear-gradient(90deg, ${CHART_COLORS[i % CHART_COLORS.length]}cc, ${CHART_COLORS[i % CHART_COLORS.length]}88)`,
+                        minWidth: "2rem",
+                      }}
+                    >
+                      <span className="text-xs font-bold text-white">{item.count}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Recent Services */}

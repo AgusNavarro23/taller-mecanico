@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Car, User, Calendar, Clock, Wrench, CheckCircle, Package, DollarSign, Edit, Download, FileText } from "lucide-react";
+import { ArrowLeft, Car, User, Clock, Wrench, CheckCircle, Edit, Download, FileText } from "lucide-react";
 import { generateVehicleHistoryPDF, generateServiceInvoicePDF } from "@/lib/pdf";
 
 interface Vehicle {
@@ -14,6 +14,7 @@ interface Vehicle {
   year: number;
   color: string | null;
   vin: string | null;
+  mileage: number | null;
   client: {
     id: string;
     name: string;
@@ -26,6 +27,7 @@ interface Service {
   id: string;
   description: string;
   status: string;
+  repairArea: string | null;
   entryDate: string;
   exitDate: string | null;
   laborCost: number;
@@ -209,6 +211,9 @@ export default function VehicleDetailPage() {
               {vehicle.vin && (
                 <p className="text-sm text-white/60 mt-1">VIN: {vehicle.vin}</p>
               )}
+              {vehicle.mileage != null && (
+                <p className="text-sm text-white/60 mt-1">{vehicle.mileage.toLocaleString("es-AR")} km</p>
+              )}
             </div>
           </div>
 
@@ -254,12 +259,6 @@ export default function VehicleDetailPage() {
             </p>
             <p className="text-sm text-white/60">Completados</p>
           </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">
-              ${services.reduce((sum, s) => sum + Number(s.totalCost), 0).toLocaleString("es-AR")}
-            </p>
-            <p className="text-sm text-white/60">Total Gastado</p>
-          </div>
         </div>
       </div>
 
@@ -299,6 +298,11 @@ export default function VehicleDetailPage() {
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(service.status)}`}>
                               {service.status.replace("_", " ")}
                             </span>
+                            {service.repairArea && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                {service.repairArea}
+                              </span>
+                            )}
                             <span className="text-sm text-white/60">
                               {new Date(service.entryDate).toLocaleDateString("es-AR")}
                             </span>
@@ -311,9 +315,6 @@ export default function VehicleDetailPage() {
                           <h3 className="font-semibold text-white">{service.description}</h3>
                         </div>
                         <div className="flex items-center gap-2">
-                          <p className="text-lg font-bold text-white">
-                            ${Number(service.totalCost).toLocaleString("es-AR")}
-                          </p>
                           <button
                             onClick={() => handleDownloadInvoice(service)}
                             className="p-2 rounded-xl text-white/40 hover:text-cyan-400 hover:bg-white/10 transition-all"
@@ -323,39 +324,6 @@ export default function VehicleDetailPage() {
                           </button>
                         </div>
                       </div>
-
-                      {/* Cost breakdown */}
-                      <div className="flex flex-wrap gap-4 text-sm text-white/60 mb-3">
-                        <div className="flex items-center">
-                          <Wrench className="w-4 h-4 mr-1" />
-                          Mano de obra: ${Number(service.laborCost).toLocaleString("es-AR")}
-                        </div>
-                        {Number(service.partsCost) > 0 && (
-                          <div className="flex items-center">
-                            <Package className="w-4 h-4 mr-1" />
-                            Repuestos: ${Number(service.partsCost).toLocaleString("es-AR")}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Parts list */}
-                      {service.parts && service.parts.length > 0 && (
-                        <div className="glass-card bg-white/5 rounded-xl p-3 mt-3">
-                          <p className="text-sm font-medium text-white/80 mb-2">Repuestos utilizados:</p>
-                          <div className="space-y-1">
-                            {service.parts.map((part: any, partIndex: number) => (
-                              <div key={partIndex} className="flex justify-between text-sm">
-                                <span className="text-white/60">
-                                  {part.name} x{part.quantity}
-                                </span>
-                                <span className="text-white">
-                                  ${(part.price * part.quantity).toLocaleString("es-AR")}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
 
                       {/* Notes */}
                       {service.notes && (

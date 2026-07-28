@@ -16,7 +16,7 @@ function formatDate(date: string | Date): string {
 
 async function loadLogo(doc: jsPDF): Promise<boolean> {
   try {
-    const res = await fetch("/Logo.jpeg");
+    const res = await fetch("/Header.jpeg");
     if (!res.ok) return false;
     const blob = await res.blob();
     const dataUrl = await new Promise<string>((resolve) => {
@@ -24,22 +24,21 @@ async function loadLogo(doc: jsPDF): Promise<boolean> {
       reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
-    doc.addImage(dataUrl, "JPEG", 15, 10, 20, 20);
+    doc.addImage(dataUrl, "JPEG", 175, 8, 20, 20);
     return true;
   } catch {
     return false;
   }
 }
 
-function addHeader(doc: jsPDF, logoLoaded: boolean) {
-  const x = logoLoaded ? 40 : 15;
+function addHeader(doc: jsPDF) {
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text(COMPANY.name, x, 20);
+  doc.text(COMPANY.name, 15, 20);
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(120, 120, 120);
-  doc.text(COMPANY.tagline, x, 27);
+  doc.text(COMPANY.tagline, 15, 27);
   doc.setTextColor(0, 0, 0);
 }
 
@@ -72,6 +71,7 @@ interface VehicleData {
   year: number;
   color: string | null;
   vin: string | null;
+  mileage: number | null;
   client: {
     name: string;
     phone: string | null;
@@ -83,6 +83,7 @@ interface ServiceData {
   id: string;
   description: string;
   status: string;
+  repairArea: string | null;
   entryDate: string;
   exitDate: string | null;
   laborCost: number;
@@ -97,9 +98,8 @@ export async function generateVehicleHistoryPDF(
   services: ServiceData[]
 ) {
   const doc = new jsPDF();
-  const logoLoaded = await loadLogo(doc);
-
-  addHeader(doc, logoLoaded);
+  await loadLogo(doc);
+  addHeader(doc);
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
@@ -120,6 +120,7 @@ export async function generateVehicleHistoryPDF(
     ["Vehículo:", `${vehicle.brand} ${vehicle.model} ${vehicle.year}`],
     ["Color:", vehicle.color || "—"],
     ["VIN:", vehicle.vin || "—"],
+    ["Kilometraje:", vehicle.mileage != null ? `${vehicle.mileage.toLocaleString("es-AR")} km` : "—"],
   ];
   const clientInfo: [string, string][] = [
     ["Propietario:", vehicle.client.name],
@@ -146,13 +147,11 @@ export async function generateVehicleHistoryPDF(
 
   y = Math.max(y, 52 + vehicleInfo.length * 6) + 8;
 
-  const totalSpent = services.reduce((sum, s) => sum + Number(s.totalCost), 0);
   doc.setFillColor(245, 245, 245);
   doc.roundedRect(15, y, 180, 14, 2, 2, "F");
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   doc.text(`Servicios: ${services.length}`, 22, y + 9);
-  doc.text(`Total gastado: ${formatCurrency(totalSpent)}`, 110, y + 9);
 
   y += 22;
 
@@ -166,55 +165,32 @@ export async function generateVehicleHistoryPDF(
       formatDate(s.entryDate),
       s.exitDate ? formatDate(s.exitDate) : "—",
       s.description,
+      s.repairArea || "—",
       statusLabel(s.status),
-      formatCurrency(Number(s.laborCost)),
-      formatCurrency(Number(s.partsCost)),
-      formatCurrency(Number(s.totalCost)),
     ]);
 
     autoTable(doc, {
       startY: y,
-      head: [
-        [
-          "Ingreso",
-          "Salida",
-          "Descripción",
-          "Estado",
-          "Mano Obra",
-          "Repuestos",
-          "Total",
-        ],
-      ],
+      head: [["Ingreso", "Salida", "Descripción", "Zona", "Estado"]],
       body: rows,
       styles: { fontSize: 8, cellPadding: 3 },
-      headStyles: {
-        fillColor: [6, 182, 212],
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-      },
+      headStyles: { fillColor: [6, 182, 212], textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [248, 248, 248] },
       columnStyles: {
-        0: { cellWidth: 20 },
-        1: { cellWidth: 20 },
-        2: { cellWidth: 42 },
-        3: { cellWidth: 22 },
-        4: { cellWidth: 22 },
-        5: { cellWidth: 22 },
-        6: { cellWidth: 22, fontStyle: "bold" },
+        0: { cellWidth: 22 },
+        1: { cellWidth: 22 },
+        2: { cellWidth: 60 },
+        3: { cellWidth: 35 },
+        4: { cellWidth: 30 },
       },
     });
 
     const afterTableY = (doc as any).lastAutoTable?.finalY || y;
 
-    const servicesWithParts = services.filter(
-      (s) => s.parts && s.parts.length > 0
-    );
+    const servicesWithParts = services.filter((s) => s.parts && s.parts.length > 0);
     if (servicesWithParts.length > 0) {
       let partsY = afterTableY + 10;
-      if (partsY > 260) {
-        doc.addPage();
-        partsY = 20;
-      }
+      if (partsY > 260) { doc.addPage(); partsY = 20; }
 
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
@@ -222,25 +198,15 @@ export async function generateVehicleHistoryPDF(
       partsY += 6;
 
       servicesWithParts.forEach((service) => {
-        if (partsY > 260) {
-          doc.addPage();
-          partsY = 20;
-        }
+        if (partsY > 260) { doc.addPage(); partsY = 20; }
 
         doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
-        doc.text(
-          `${service.description} — ${formatDate(service.entryDate)}`,
-          15,
-          partsY
-        );
+        doc.text(`${service.description} — ${formatDate(service.entryDate)}`, 15, partsY);
         partsY += 5;
 
         const partRows = (service.parts || []).map((p) => [
-          p.name,
-          String(p.quantity),
-          formatCurrency(p.price),
-          formatCurrency(p.price * p.quantity),
+          p.name, String(p.quantity), formatCurrency(p.price), formatCurrency(p.price * p.quantity),
         ]);
 
         autoTable(doc, {
@@ -248,16 +214,12 @@ export async function generateVehicleHistoryPDF(
           head: [["Repuesto", "Cant.", "Precio Unit.", "Subtotal"]],
           body: partRows,
           styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: {
-            fillColor: [100, 100, 100],
-            textColor: [255, 255, 255],
-          },
+          headStyles: { fillColor: [100, 100, 100], textColor: [255, 255, 255] },
           margin: { left: 15 },
           tableWidth: 100,
         });
 
-        partsY =
-          (doc as any).lastAutoTable?.finalY + 8;
+        partsY = (doc as any).lastAutoTable?.finalY + 8;
       });
     }
   }
@@ -272,18 +234,16 @@ export async function generateServiceInvoicePDF(
   client: { name: string; phone: string | null; email: string | null }
 ) {
   const doc = new jsPDF();
-  const logoLoaded = await loadLogo(doc);
+  await loadLogo(doc);
+  addHeader(doc);
 
-  addHeader(doc, logoLoaded);
-
-  const x = logoLoaded ? 40 : 15;
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Factura de Servicio", x, 38);
+  doc.text("Factura de Servicio", 15, 38);
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100, 100, 100);
-  doc.text(`N° ${service.id.slice(0, 8).toUpperCase()}`, x, 45);
+  doc.text(`N° ${service.id.slice(0, 8).toUpperCase()}`, 15, 45);
   doc.text(`Fecha: ${formatDate(new Date())}`, 140, 45);
   doc.setTextColor(0, 0, 0);
 
@@ -305,6 +265,10 @@ export async function generateServiceInvoicePDF(
     ["Estado:", statusLabel(service.status)],
   ];
 
+  if (service.repairArea) {
+    rightInfo.push(["Zona:", service.repairArea]);
+  }
+
   leftInfo.forEach(([label, value]) => {
     doc.setFont("helvetica", "bold");
     doc.text(label, leftCol, y);
@@ -322,7 +286,7 @@ export async function generateServiceInvoicePDF(
     y += 6;
   });
 
-  y = 82;
+  y = Math.max(y, 58 + leftInfo.length * 6) + 6;
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
@@ -345,12 +309,7 @@ export async function generateServiceInvoicePDF(
   if (service.parts && service.parts.length > 0) {
     service.parts.forEach((p) => {
       const subtotal = p.price * p.quantity;
-      conceptRows.push([
-        p.name,
-        String(p.quantity),
-        formatCurrency(p.price),
-        formatCurrency(subtotal),
-      ]);
+      conceptRows.push([p.name, String(p.quantity), formatCurrency(p.price), formatCurrency(subtotal)]);
     });
   }
 
@@ -359,11 +318,7 @@ export async function generateServiceInvoicePDF(
     head: [["Concepto", "Cant.", "Precio Unit.", "Subtotal"]],
     body: conceptRows,
     styles: { fontSize: 9, cellPadding: 4 },
-    headStyles: {
-      fillColor: [6, 182, 212],
-      textColor: [255, 255, 255],
-      fontStyle: "bold",
-    },
+    headStyles: { fillColor: [6, 182, 212], textColor: [255, 255, 255], fontStyle: "bold" },
     alternateRowStyles: { fillColor: [248, 248, 248] },
     columnStyles: {
       0: { cellWidth: 80 },
@@ -381,17 +336,12 @@ export async function generateServiceInvoicePDF(
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
-  doc.text(`TOTAL: ${formatCurrency(Number(service.totalCost))}`, 157, totalY + 8, {
-    align: "center",
-  });
+  doc.text(`TOTAL: ${formatCurrency(Number(service.totalCost))}`, 157, totalY + 8, { align: "center" });
   doc.setTextColor(0, 0, 0);
 
   if (service.notes) {
     let notesY = totalY + 22;
-    if (notesY > 260) {
-      doc.addPage();
-      notesY = 20;
-    }
+    if (notesY > 260) { doc.addPage(); notesY = 20; }
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.text("Notas:", 15, notesY);

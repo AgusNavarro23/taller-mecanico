@@ -20,12 +20,14 @@ export const vehicleSchema = z.object({
   year: z.number().min(1900, "Año inválido").max(new Date().getFullYear() + 1, "Año inválido"),
   color: z.string().optional(),
   vin: z.string().optional(),
+  mileage: z.number().min(0, "El kilometraje no puede ser negativo").optional(),
   clientId: z.string().min(1, "El cliente es requerido"),
 });
 
 export const serviceSchema = z.object({
   description: z.string().min(1, "La descripción es requerida"),
   status: z.enum(["PENDIENTE", "EN_REPARACION", "LISTO", "ENTREGADO"]),
+  repairArea: z.string().optional(),
   entryDate: z.string().min(1, "La fecha de ingreso es requerida"),
   exitDate: z.string().optional(),
   laborCost: z.number().min(0, "El costo no puede ser negativo"),

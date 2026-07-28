@@ -8,6 +8,7 @@ interface Service {
   id: string;
   description: string;
   status: string;
+  repairArea: string | null;
   entryDate: string;
   exitDate: string | null;
   laborCost: number;
@@ -41,6 +42,7 @@ export default function ServicesPage() {
   const [formData, setFormData] = useState({
     description: "",
     status: "PENDIENTE",
+    repairArea: "",
     entryDate: new Date().toISOString().split("T")[0],
     exitDate: "",
     laborCost: 0,
@@ -78,11 +80,11 @@ export default function ServicesPage() {
       if (res.ok) {
         setShowModal(false);
         setEditingService(null);
-        setFormData({
-          description: "", status: "PENDIENTE",
-          entryDate: new Date().toISOString().split("T")[0],
-          exitDate: "", laborCost: 0, notes: "", vehicleId: "", parts: [],
-        });
+      setFormData({
+        description: "", status: "PENDIENTE", repairArea: "",
+        entryDate: new Date().toISOString().split("T")[0],
+        exitDate: "", laborCost: 0, notes: "", vehicleId: "", parts: [],
+      });
         fetchServices();
       }
     } catch (e) { console.error(e); }
@@ -91,7 +93,7 @@ export default function ServicesPage() {
   const handleEdit = (s: Service) => {
     setEditingService(s);
     setFormData({
-      description: s.description, status: s.status,
+      description: s.description, status: s.status, repairArea: s.repairArea || "",
       entryDate: new Date(s.entryDate).toISOString().split("T")[0],
       exitDate: s.exitDate ? new Date(s.exitDate).toISOString().split("T")[0] : "",
       laborCost: Number(s.laborCost), notes: s.notes || "",
@@ -169,7 +171,7 @@ export default function ServicesPage() {
           onClick={() => {
             setEditingService(null);
             setFormData({
-              description: "", status: "PENDIENTE",
+              description: "", status: "PENDIENTE", repairArea: "",
               entryDate: new Date().toISOString().split("T")[0],
               exitDate: "", laborCost: 0, notes: "", vehicleId: "", parts: [],
             });
@@ -346,6 +348,23 @@ export default function ServicesPage() {
                     className="glass-input w-full px-4 py-3 rounded-2xl" min="0" step="0.01" required
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/50 mb-2">Zona de Reparación</label>
+                <select value={formData.repairArea}
+                  onChange={(e) => setFormData({ ...formData, repairArea: e.target.value })}
+                  className="glass-input w-full px-4 py-3 rounded-2xl appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(255,255,255,0.3)' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 6l3.5 3.5L11.5 6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}
+                >
+                  <option value="" style={{ background: "#1a1a2e", color: "#fff" }}>Seleccionar zona</option>
+                  <option value="Motor" style={{ background: "#1a1a2e", color: "#fff" }}>Motor</option>
+                  <option value="Embrague" style={{ background: "#1a1a2e", color: "#fff" }}>Embrague</option>
+                  <option value="Transmisión" style={{ background: "#1a1a2e", color: "#fff" }}>Transmisión</option>
+                  <option value="Freno" style={{ background: "#1a1a2e", color: "#fff" }}>Freno</option>
+                  <option value="Inyección Electrónica" style={{ background: "#1a1a2e", color: "#fff" }}>Inyección Electrónica</option>
+                  <option value="Electricidad" style={{ background: "#1a1a2e", color: "#fff" }}>Electricidad</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

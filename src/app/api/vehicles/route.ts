@@ -38,6 +38,7 @@ export async function POST(req: Request) {
         year: data.year,
         color: data.color || null,
         vin: data.vin || null,
+        mileage: data.mileage || null,
         clientId: data.clientId,
       },
       include: {

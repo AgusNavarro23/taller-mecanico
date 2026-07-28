@@ -84,6 +84,7 @@ model Vehicle {
   year      Int
   color     String?
   vin       String?
+  mileage   Int?
   clientId  String
   client    Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
   services  ServiceEntry[]
@@ -97,6 +98,7 @@ model ServiceEntry {
   id          String   @id @default(cuid())
   description String
   status      ServiceStatus @default(PENDIENTE)
+  repairArea  String?
   entryDate   DateTime @default(now())
   exitDate    DateTime?
   laborCost   Decimal  @default(0) @db.Decimal(10, 2)

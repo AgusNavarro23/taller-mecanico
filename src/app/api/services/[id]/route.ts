@@ -55,6 +55,7 @@ export async function PUT(
       data: {
         description: body.description,
         status: body.status,
+        repairArea: body.repairArea || null,
         entryDate: new Date(body.entryDate),
         exitDate: body.exitDate ? new Date(body.exitDate) : null,
         laborCost,

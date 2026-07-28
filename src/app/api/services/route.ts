@@ -47,6 +47,7 @@ export async function POST(req: Request) {
       data: {
         description: data.description,
         status: data.status,
+        repairArea: data.repairArea || null,
         entryDate: new Date(data.entryDate),
         exitDate: data.exitDate ? new Date(data.exitDate) : null,
         laborCost,

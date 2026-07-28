@@ -13,6 +13,8 @@ export async function GET() {
       deliveredServices,
       revenueResult,
       recentServices,
+      servicesByArea,
+      vehiclesByBrand,
     ] = await Promise.all([
       prisma.client.count(),
       prisma.vehicle.count(),
@@ -31,6 +33,17 @@ export async function GET() {
           },
         },
       }),
+      prisma.serviceEntry.groupBy({
+        by: ["repairArea"],
+        _count: { id: true },
+        where: { repairArea: { not: null } },
+      }),
+      prisma.vehicle.groupBy({
+        by: ["brand"],
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 10,
+      }),
     ]);
 
     const totalRevenue = Number(revenueResult._sum.totalCost ?? 0);
@@ -45,6 +58,14 @@ export async function GET() {
       deliveredServices,
       totalRevenue,
       recentServices,
+      servicesByArea: servicesByArea.map((s) => ({
+        area: s.repairArea || "Sin especificar",
+        count: s._count.id,
+      })),
+      vehiclesByBrand: vehiclesByBrand.map((v) => ({
+        brand: v.brand,
+        count: v._count.id,
+      })),
     });
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);

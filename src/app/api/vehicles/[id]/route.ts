@@ -52,6 +52,7 @@ export async function PUT(
         year: Number(body.year),
         color: body.color || null,
         vin: body.vin || null,
+        mileage: body.mileage ? Number(body.mileage) : null,
         clientId: body.clientId,
       },
       include: {
