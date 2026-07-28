@@ -23,7 +23,7 @@ async function loadLogo(doc: jsPDF): Promise<boolean> {
       reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
-    doc.addImage(dataUrl, "JPEG", 145, 5, 50, 30);
+    doc.addImage(dataUrl, "JPEG", 0, 0, 210, 59);
     return true;
   } catch {
     return false;
@@ -94,15 +94,15 @@ export async function generateVehicleHistoryPDF(
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Historial del Vehículo", 15, 15);
+  doc.text("Historial del Vehículo", 15, 70);
 
   doc.setDrawColor(200, 200, 200);
-  doc.line(15, 18, 195, 18);
+  doc.line(15, 73, 195, 73);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
-  let y = 25;
+  let y = 80;
   const leftCol = 15;
   const rightCol = 110;
 
@@ -127,7 +127,7 @@ export async function generateVehicleHistoryPDF(
     y += 6;
   });
 
-  y = 25;
+  y = 80;
   clientInfo.forEach(([label, value]) => {
     doc.setFont("helvetica", "bold");
     doc.text(label, rightCol, y);
@@ -136,7 +136,7 @@ export async function generateVehicleHistoryPDF(
     y += 6;
   });
 
-  y = Math.max(y, 25 + vehicleInfo.length * 6) + 8;
+  y = Math.max(y, 80 + vehicleInfo.length * 6) + 8;
 
   doc.setFillColor(245, 245, 245);
   doc.roundedRect(15, y, 180, 14, 2, 2, "F");
@@ -230,18 +230,18 @@ export async function generateServiceInvoicePDF(
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Factura de Servicio", 15, 15);
+  doc.text("Factura de Servicio", 15, 70);
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100, 100, 100);
-  doc.text(`N° ${service.id.slice(0, 8).toUpperCase()}`, 15, 22);
-  doc.text(`Fecha: ${formatDate(new Date())}`, 140, 22);
+  doc.text(`N° ${service.id.slice(0, 8).toUpperCase()}`, 15, 77);
+  doc.text(`Fecha: ${formatDate(new Date())}`, 140, 77);
   doc.setTextColor(0, 0, 0);
 
   doc.setDrawColor(200, 200, 200);
-  doc.line(15, 27, 195, 27);
+  doc.line(15, 82, 195, 82);
 
-  let y = 35;
+  let y = 90;
   const leftCol = 15;
   const rightCol = 110;
 
@@ -268,7 +268,7 @@ export async function generateServiceInvoicePDF(
     y += 6;
   });
 
-  y = 35;
+  y = 90;
   rightInfo.forEach(([label, value]) => {
     doc.setFont("helvetica", "bold");
     doc.text(label, rightCol, y);
@@ -277,7 +277,7 @@ export async function generateServiceInvoicePDF(
     y += 6;
   });
 
-  y = Math.max(y, 35 + leftInfo.length * 6) + 6;
+  y = Math.max(y, 90 + leftInfo.length * 6) + 6;
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
