@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Taller Rocko - Sistema de Gestión",
+  title: "Taller Electromecánico - Sistema de Gestión",
   description: "Sistema de gestión para taller mecánico con trazabilidad de vehículos y servicios",
   icons: {
     icon: "/Logo.jpeg",

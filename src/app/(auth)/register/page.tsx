@@ -106,9 +106,9 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl mb-3 animate-float overflow-hidden">
-            <Image src="/Logo.jpeg" alt="Taller Rocko" width={80} height={80} className="rounded-xl object-cover" />
+            <Image src="/Logo.jpeg" alt="Taller Electromecánico" width={80} height={80} className="rounded-xl object-cover" />
           </div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Taller Rocko</h1>
+          <h1 className="text-xl font-bold text-white tracking-tight">Taller Electromecánico</h1>
           <p className="text-white/40 mt-1 text-sm">Sistema de Gestión</p>
         </div>
 

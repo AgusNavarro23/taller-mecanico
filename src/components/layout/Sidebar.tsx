@@ -56,10 +56,10 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: Sideb
         <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
-              <Image src="/Logo.jpeg" alt="Taller Rocko" width={48} height={48} className="rounded-xl object-cover" />
+              <Image src="/Logo.jpeg" alt="Taller Electromecánico" width={48} height={48} className="rounded-xl object-cover" />
             </div>
             {isOpen && (
-              <span className="text-lg font-bold text-white tracking-tight">Taller Rocko</span>
+              <span className="text-lg font-bold text-white tracking-tight">Taller Electromecánico</span>
             )}
           </div>
         </div>
@@ -124,9 +124,9 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: Sideb
         <div className="flex items-center justify-between h-16 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden">
-              <Image src="/Logo.jpeg" alt="Taller Rocko" width={48} height={48} className="rounded-xl object-cover" />
+              <Image src="/Logo.jpeg" alt="Taller Electromecánico" width={48} height={48} className="rounded-xl object-cover" />
             </div>
-            <span className="text-lg font-bold text-white">Taller Rocko</span>
+            <span className="text-lg font-bold text-white">Taller Electromecánico</span>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
             <X className="w-5 h-5 text-white/60" />
