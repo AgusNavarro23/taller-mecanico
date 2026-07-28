@@ -83,7 +83,7 @@ model Vehicle {
   model     String
   year      Int
   color     String?
- VIN       String?
+  vin       String?
   clientId  String
   client    Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
   services  ServiceEntry[]

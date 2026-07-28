@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Taller Rocko - Sistema de Gestión",
   description: "Sistema de gestión para taller mecánico con trazabilidad de vehículos y servicios",
   icons: {
-    icon: "/Rocko.jpeg",
+    icon: "/Logo.jpeg",
   },
 };
 

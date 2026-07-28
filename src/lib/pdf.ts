@@ -16,7 +16,7 @@ function formatDate(date: string | Date): string {
 
 async function loadLogo(doc: jsPDF): Promise<boolean> {
   try {
-    const res = await fetch("/Rocko.jpeg");
+    const res = await fetch("/Logo.jpeg");
     if (!res.ok) return false;
     const blob = await res.blob();
     const dataUrl = await new Promise<string>((resolve) => {

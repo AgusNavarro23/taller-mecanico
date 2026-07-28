@@ -112,7 +112,7 @@ export default function RegisterPage() {
               boxShadow: "0 8px 32px rgba(6,182,212,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
             }}
           >
-            <Image src="/Rocko.jpeg" alt="Taller Rocko" width={36} height={36} className="rounded-lg object-cover" />
+            <Image src="/Logo.jpeg" alt="Taller Rocko" width={36} height={36} className="rounded-lg object-cover" />
           </div>
           <h1 className="text-xl font-bold text-white tracking-tight">Taller Rocko</h1>
           <p className="text-white/40 mt-1 text-sm">Sistema de Gestión</p>

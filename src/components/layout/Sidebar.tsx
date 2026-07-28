@@ -61,7 +61,7 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: Sideb
                 border: "1px solid rgba(6,182,212,0.4)",
               }}
             >
-              <Image src="/Rocko.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
+              <Image src="/Logo.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
             </div>
             {isOpen && (
               <span className="text-lg font-bold text-white tracking-tight">Taller Rocko</span>
@@ -134,7 +134,7 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, userRole }: Sideb
                 border: "1px solid rgba(6,182,212,0.4)",
               }}
             >
-              <Image src="/Rocko.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
+              <Image src="/Logo.jpeg" alt="Taller Rocko" width={40} height={40} className="rounded-xl object-cover" />
             </div>
             <span className="text-lg font-bold text-white">Taller Rocko</span>
           </div>
