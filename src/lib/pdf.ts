@@ -38,11 +38,10 @@ async function loadLogo(doc: jsPDF): Promise<boolean> {
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     const hiRes = canvas.toDataURL("image/jpeg", 0.92);
 
-    const bannerHeight = 59;
-    const imgWidth = 210;
-    const imgHeight = Math.min(img.height * (imgWidth / img.width), bannerHeight);
-    const yOff = Math.max((bannerHeight - imgHeight) / 2, 0);
-    doc.addImage(hiRes, "JPEG", 0, yOff, imgWidth, imgHeight);
+    const imgWidth = 105;
+    const imgHeight = 74;
+    const xOff = 52.5;
+    doc.addImage(hiRes, "JPEG", xOff, 0, imgWidth, imgHeight);
     return true;
   } catch {
     return false;
@@ -248,15 +247,15 @@ export async function generateVehicleHistoryPDF(
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Historial del Vehículo", 15, 70);
+  doc.text("Historial del Vehículo", 15, 82);
 
   doc.setDrawColor(200, 200, 200);
-  doc.line(15, 73, 195, 73);
+  doc.line(15, 85, 195, 85);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
-  let y = 80;
+  let y = 92;
   const leftCol = 15;
   const rightCol = 110;
 
@@ -281,7 +280,7 @@ export async function generateVehicleHistoryPDF(
     y += 6;
   });
 
-  y = 80;
+  y = 92;
   clientInfo.forEach(([label, value]) => {
     doc.setFont("helvetica", "bold");
     doc.text(label, rightCol, y);
@@ -290,7 +289,7 @@ export async function generateVehicleHistoryPDF(
     y += 6;
   });
 
-  y = Math.max(y, 80 + vehicleInfo.length * 6) + 8;
+  y = Math.max(y, 92 + vehicleInfo.length * 6) + 8;
 
   doc.setFillColor(245, 245, 245);
   doc.roundedRect(15, y, 180, 14, 2, 2, "F");
@@ -323,12 +322,12 @@ export async function generateVehicleHistoryPDF(
       headStyles: { fillColor: [6, 182, 212], textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [248, 248, 248] },
       columnStyles: {
-        0: { cellWidth: 18 },
-        1: { cellWidth: 18 },
-        2: { cellWidth: 40 },
-        3: { cellWidth: 28 },
+        0: { cellWidth: 20 },
+        1: { cellWidth: 20 },
+        2: { cellWidth: 45 },
+        3: { cellWidth: 30 },
         4: { cellWidth: 22 },
-        5: { cellWidth: 40 },
+        5: { cellWidth: 43 },
       },
     });
 
@@ -344,29 +343,35 @@ export async function generateVehicleHistoryPDF(
       doc.text("Repuestos Utilizados", 15, partsY);
       partsY += 6;
 
-      servicesWithParts.forEach((service) => {
-        if (partsY > 260) { doc.addPage(); partsY = 20; }
+      servicesWithParts.forEach((service, i) => {
+        const col = i % 2;
+        const colX = col === 0 ? 15 : 107;
+
+        if (col === 0 && partsY > 260) { doc.addPage(); partsY = 20; }
+        if (col === 1 && partsY > 260) { partsY = 20; }
 
         doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
-        doc.text(`${service.description} — ${formatDate(service.entryDate)}`, 15, partsY);
-        partsY += 5;
+        doc.text(`${service.description} — ${formatDate(service.entryDate)}`, colX, partsY);
 
         const partRows = (service.parts || []).map((p) => [
           p.name, String(p.quantity),
         ]);
 
         autoTable(doc, {
-          startY: partsY,
+          startY: partsY + 4,
           head: [["Repuesto", "Cant."]],
           body: partRows,
           styles: { fontSize: 8, cellPadding: 2 },
           headStyles: { fillColor: [100, 100, 100], textColor: [255, 255, 255] },
-          margin: { left: 15 },
-          tableWidth: 80,
+          margin: { left: colX },
+          tableWidth: 88,
         });
 
-        partsY = (doc as any).lastAutoTable?.finalY + 8;
+        const tableBottom = (doc as any).lastAutoTable?.finalY || partsY + 10;
+        if (col === 1 || i === servicesWithParts.length - 1) {
+          partsY = tableBottom + 10;
+        }
       });
     }
   }
@@ -403,7 +408,7 @@ export async function generateServiceInvoicePDF(
   const doc = new jsPDF();
   await loadLogo(doc);
 
-  addInvoiceSection(doc, service, vehicle, client, 70, true);
+  addInvoiceSection(doc, service, vehicle, client, 82, true);
 
   addFooter(doc);
   doc.save(`factura-${service.id.slice(0, 8)}.pdf`);
@@ -417,7 +422,7 @@ export async function generateBulkInvoicesPDF(
   const doc = new jsPDF();
   await loadLogo(doc);
 
-  let currentY = 70;
+  let currentY = 82;
 
   services.forEach((service, index) => {
     if (index > 0) {
