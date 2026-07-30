@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Car, User, Clock, Wrench, CheckCircle, Edit, Download, FileText } from "lucide-react";
-import { generateVehicleHistoryPDF, generateServiceInvoicePDF } from "@/lib/pdf";
+import { ArrowLeft, Car, User, Clock, Wrench, CheckCircle, Download, FileText, Calendar } from "lucide-react";
+import { generateVehicleHistoryPDF, generateServiceInvoicePDF, generateBulkInvoicesPDF } from "@/lib/pdf";
 
 interface Vehicle {
   id: string;
@@ -45,6 +45,13 @@ export default function VehicleDetailPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [showObservationsModal, setShowObservationsModal] = useState(false);
+  const [observations, setObservations] = useState("");
+
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkDateFrom, setBulkDateFrom] = useState("");
+  const [bulkDateTo, setBulkDateTo] = useState("");
+
   useEffect(() => {
     if (params.id) {
       fetchVehicleData();
@@ -76,7 +83,9 @@ export default function VehicleDetailPage() {
 
   const handleDownloadHistory = () => {
     if (vehicle) {
-      generateVehicleHistoryPDF(vehicle, services);
+      generateVehicleHistoryPDF(vehicle, services, observations);
+      setShowObservationsModal(false);
+      setObservations("");
     }
   };
 
@@ -88,6 +97,33 @@ export default function VehicleDetailPage() {
         { name: vehicle.client.name, phone: vehicle.client.phone, email: vehicle.client.email }
       );
     }
+  };
+
+  const handleBulkDownload = () => {
+    if (!vehicle || !bulkDateFrom || !bulkDateTo) return;
+    const from = new Date(bulkDateFrom);
+    const to = new Date(bulkDateTo);
+    to.setHours(23, 59, 59, 999);
+
+    const filtered = services.filter((s) => {
+      const d = new Date(s.entryDate);
+      return d >= from && d <= to;
+    });
+
+    if (filtered.length === 0) {
+      alert("No hay servicios en ese rango de fechas.");
+      return;
+    }
+
+    generateBulkInvoicesPDF(
+      filtered,
+      { plate: vehicle.plate, brand: vehicle.brand, model: vehicle.model, year: vehicle.year },
+      { name: vehicle.client.name, phone: vehicle.client.phone, email: vehicle.client.email }
+    );
+
+    setShowBulkModal(false);
+    setBulkDateFrom("");
+    setBulkDateTo("");
   };
 
   const getStatusIcon = (status: string) => {
@@ -156,7 +192,7 @@ export default function VehicleDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => router.back()}
@@ -173,11 +209,18 @@ export default function VehicleDetailPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={handleDownloadHistory}
+            onClick={() => setShowObservationsModal(true)}
             className="glass-btn-ghost inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
           >
             <Download className="w-5 h-5 mr-2" />
             Historial PDF
+          </button>
+          <button
+            onClick={() => setShowBulkModal(true)}
+            className="glass-btn-ghost inline-flex items-center justify-center px-5 py-2.5 font-semibold rounded-2xl"
+          >
+            <Calendar className="w-5 h-5 mr-2" />
+            Facturas por rango
           </button>
           <Link
             href={`/services?vehicleId=${vehicle.id}`}
@@ -276,21 +319,17 @@ export default function VehicleDetailPage() {
         ) : (
           <div className="p-6">
             <div className="relative">
-              {/* Timeline line */}
               <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-white/10"></div>
 
-              {/* Timeline items */}
               <div className="space-y-6">
-                {services.map((service, index) => (
+                {services.map((service) => (
                   <div key={service.id} className="relative flex items-start">
-                    {/* Timeline dot */}
                     <div className="relative z-10 w-16 h-16 flex items-center justify-center">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getTimelineDotColor(service.status)}`}>
                         {getStatusIcon(service.status)}
                       </div>
                     </div>
 
-                    {/* Content */}
                     <div className="flex-1 glass-card bg-white/5 rounded-2xl p-4 ml-4">
                       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-3">
                         <div>
@@ -325,7 +364,6 @@ export default function VehicleDetailPage() {
                         </div>
                       </div>
 
-                      {/* Notes */}
                       {service.notes && (
                         <div className="mt-3 text-sm text-white/60 glass-card bg-white/5 rounded-xl p-3">
                           <p className="font-medium text-white/80 mb-1">Notas:</p>
@@ -340,6 +378,102 @@ export default function VehicleDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Modal Observaciones */}
+      {showObservationsModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-card rounded-3xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 pb-0">
+              <h2 className="text-xl font-bold text-white">Historial PDF</h2>
+              <button onClick={() => { setShowObservationsModal(false); setObservations(""); }} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span className="text-white/40 text-xl">&times;</span>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white/50 mb-2">Observaciones generales (opcional)</label>
+                <textarea
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                  className="glass-input w-full px-4 py-3 rounded-2xl"
+                  rows={5}
+                  placeholder="Agregar observaciones que aparecerán al final del PDF..."
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => { setShowObservationsModal(false); setObservations(""); }}
+                  className="glass-btn-ghost flex-1 py-3 rounded-2xl font-medium"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleDownloadHistory}
+                  className="glass-btn flex-1 py-3 rounded-2xl font-semibold inline-flex items-center justify-center"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Descargar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Facturas por Rango */}
+      {showBulkModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-card rounded-3xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 pb-0">
+              <h2 className="text-xl font-bold text-white">Facturas por Rango</h2>
+              <button onClick={() => { setShowBulkModal(false); setBulkDateFrom(""); setBulkDateTo(""); }} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span className="text-white/40 text-xl">&times;</span>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-white/50">Seleccioná el rango de fechas para descargar las facturas de servicios en un solo PDF.</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-white/50 mb-2">Fecha desde</label>
+                  <input
+                    type="date"
+                    value={bulkDateFrom}
+                    onChange={(e) => setBulkDateFrom(e.target.value)}
+                    className="glass-input w-full px-4 py-3 rounded-2xl"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white/50 mb-2">Fecha hasta</label>
+                  <input
+                    type="date"
+                    value={bulkDateTo}
+                    onChange={(e) => setBulkDateTo(e.target.value)}
+                    className="glass-input w-full px-4 py-3 rounded-2xl"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => { setShowBulkModal(false); setBulkDateFrom(""); setBulkDateTo(""); }}
+                  className="glass-btn-ghost flex-1 py-3 rounded-2xl font-medium"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleBulkDownload}
+                  disabled={!bulkDateFrom || !bulkDateTo}
+                  className="glass-btn flex-1 py-3 rounded-2xl font-semibold inline-flex items-center justify-center disabled:opacity-40"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Descargar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

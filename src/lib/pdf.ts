@@ -23,14 +23,30 @@ async function loadLogo(doc: jsPDF): Promise<boolean> {
       reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
-    doc.addImage(dataUrl, "JPEG", 0, 0, 210, 59);
+
+    const img = new Image();
+    img.src = dataUrl;
+    await new Promise<void>((resolve) => { img.onload = () => resolve(); });
+
+    const scale = 3;
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const hiRes = canvas.toDataURL("image/jpeg", 0.92);
+
+    const bannerHeight = 59;
+    const imgWidth = 210;
+    const imgHeight = Math.min(img.height * (imgWidth / img.width), bannerHeight);
+    const yOff = Math.max((bannerHeight - imgHeight) / 2, 0);
+    doc.addImage(hiRes, "JPEG", 0, yOff, imgWidth, imgHeight);
     return true;
   } catch {
     return false;
   }
-}
-
-function addHeader(doc: jsPDF) {
 }
 
 function addFooter(doc: jsPDF) {
@@ -53,6 +69,10 @@ function statusLabel(status: string): string {
     ENTREGADO: "Entregado",
   };
   return labels[status] || status;
+}
+
+function truncate(str: string, max: number): string {
+  return str.length > max ? str.slice(0, max) + "…" : str;
 }
 
 interface VehicleData {
@@ -84,13 +104,147 @@ interface ServiceData {
   parts: { name: string; quantity: number; price: number }[] | null;
 }
 
+function addInvoiceSection(
+  doc: jsPDF,
+  service: ServiceData,
+  vehicle: { plate: string; brand: string; model: string; year: number },
+  client: { name: string; phone: string | null; email: string | null },
+  startY: number,
+  includeHeader: boolean
+): number {
+  let y = startY;
+
+  if (includeHeader) {
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Factura de Servicio", 15, y);
+    y += 7;
+  }
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(100, 100, 100);
+  doc.text(`N° ${service.id.slice(0, 8).toUpperCase()}`, 15, y);
+  doc.text(`Fecha: ${formatDate(new Date())}`, 140, y);
+  doc.setTextColor(0, 0, 0);
+  y += 5;
+
+  doc.setDrawColor(200, 200, 200);
+  doc.line(15, y, 195, y);
+  y += 8;
+
+  const leftCol = 15;
+  const rightCol = 110;
+
+  const leftInfo: [string, string][] = [
+    ["Cliente:", client.name],
+    ["Teléfono:", client.phone || "—"],
+    ["Email:", client.email || "—"],
+  ];
+  const rightInfo: [string, string][] = [
+    ["Vehículo:", `${vehicle.brand} ${vehicle.model} ${vehicle.year}`],
+    ["Patente:", vehicle.plate],
+    ["Estado:", statusLabel(service.status)],
+  ];
+
+  if (service.repairArea) {
+    rightInfo.push(["Zona:", service.repairArea]);
+  }
+
+  let yLeft = y;
+  leftInfo.forEach(([label, value]) => {
+    doc.setFont("helvetica", "bold");
+    doc.text(label, leftCol, yLeft);
+    doc.setFont("helvetica", "normal");
+    doc.text(value, leftCol + 22, yLeft);
+    yLeft += 6;
+  });
+
+  let yRight = y;
+  rightInfo.forEach(([label, value]) => {
+    doc.setFont("helvetica", "bold");
+    doc.text(label, rightCol, yRight);
+    doc.setFont("helvetica", "normal");
+    doc.text(value, rightCol + 22, yRight);
+    yRight += 6;
+  });
+
+  y = Math.max(yLeft, yRight) + 6;
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.text("Servicio", 15, y);
+  y += 6;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  const descLines = doc.splitTextToSize(service.description, 180);
+  doc.text(descLines, 15, y);
+  y += descLines.length * 5 + 4;
+
+  doc.setDrawColor(200, 200, 200);
+  doc.line(15, y, 195, y);
+  y += 8;
+
+  const conceptRows: string[][] = [
+    ["Mano de obra", "1", formatCurrency(Number(service.laborCost)), formatCurrency(Number(service.laborCost))],
+  ];
+
+  if (service.parts && service.parts.length > 0) {
+    service.parts.forEach((p) => {
+      const subtotal = p.price * p.quantity;
+      conceptRows.push([p.name, String(p.quantity), formatCurrency(p.price), formatCurrency(subtotal)]);
+    });
+  }
+
+  autoTable(doc, {
+    startY: y,
+    head: [["Concepto", "Cant.", "Precio Unit.", "Subtotal"]],
+    body: conceptRows,
+    styles: { fontSize: 9, cellPadding: 4 },
+    headStyles: { fillColor: [6, 182, 212], textColor: [255, 255, 255], fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [248, 248, 248] },
+    columnStyles: {
+      0: { cellWidth: 80 },
+      1: { cellWidth: 20 },
+      2: { cellWidth: 35 },
+      3: { cellWidth: 35, fontStyle: "bold" },
+    },
+  });
+
+  const afterTableY = (doc as any).lastAutoTable?.finalY || y;
+  const totalY = afterTableY + 10;
+
+  doc.setFillColor(6, 182, 212);
+  doc.roundedRect(120, totalY, 75, 12, 2, 2, "F");
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(255, 255, 255);
+  doc.text(`TOTAL: ${formatCurrency(Number(service.totalCost))}`, 157, totalY + 8, { align: "center" });
+  doc.setTextColor(0, 0, 0);
+
+  let endY = totalY + 18;
+
+  if (service.notes) {
+    if (endY > 260) { doc.addPage(); endY = 20; }
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("Notas:", 15, endY);
+    doc.setFont("helvetica", "normal");
+    const noteLines = doc.splitTextToSize(service.notes, 180);
+    doc.text(noteLines, 15, endY + 5);
+    endY += noteLines.length * 5 + 10;
+  }
+
+  return endY;
+}
+
 export async function generateVehicleHistoryPDF(
   vehicle: VehicleData,
-  services: ServiceData[]
+  services: ServiceData[],
+  observations?: string
 ) {
   const doc = new jsPDF();
   await loadLogo(doc);
-  addHeader(doc);
 
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
@@ -158,21 +312,23 @@ export async function generateVehicleHistoryPDF(
       s.description,
       s.repairArea || "—",
       statusLabel(s.status),
+      s.notes ? truncate(s.notes, 40) : "—",
     ]);
 
     autoTable(doc, {
       startY: y,
-      head: [["Ingreso", "Salida", "Descripción", "Zona", "Estado"]],
+      head: [["Ingreso", "Salida", "Descripción", "Zona", "Estado", "Notas"]],
       body: rows,
-      styles: { fontSize: 8, cellPadding: 3 },
+      styles: { fontSize: 7, cellPadding: 2 },
       headStyles: { fillColor: [6, 182, 212], textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [248, 248, 248] },
       columnStyles: {
-        0: { cellWidth: 22 },
-        1: { cellWidth: 22 },
-        2: { cellWidth: 60 },
-        3: { cellWidth: 35 },
-        4: { cellWidth: 30 },
+        0: { cellWidth: 18 },
+        1: { cellWidth: 18 },
+        2: { cellWidth: 40 },
+        3: { cellWidth: 28 },
+        4: { cellWidth: 22 },
+        5: { cellWidth: 40 },
       },
     });
 
@@ -185,7 +341,7 @@ export async function generateVehicleHistoryPDF(
 
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("Detalle de Repuestos", 15, partsY);
+      doc.text("Repuestos Utilizados", 15, partsY);
       partsY += 6;
 
       servicesWithParts.forEach((service) => {
@@ -197,22 +353,42 @@ export async function generateVehicleHistoryPDF(
         partsY += 5;
 
         const partRows = (service.parts || []).map((p) => [
-          p.name, String(p.quantity), formatCurrency(p.price), formatCurrency(p.price * p.quantity),
+          p.name, String(p.quantity),
         ]);
 
         autoTable(doc, {
           startY: partsY,
-          head: [["Repuesto", "Cant.", "Precio Unit.", "Subtotal"]],
+          head: [["Repuesto", "Cant."]],
           body: partRows,
           styles: { fontSize: 8, cellPadding: 2 },
           headStyles: { fillColor: [100, 100, 100], textColor: [255, 255, 255] },
           margin: { left: 15 },
-          tableWidth: 100,
+          tableWidth: 80,
         });
 
         partsY = (doc as any).lastAutoTable?.finalY + 8;
       });
     }
+  }
+
+  if (observations && observations.trim()) {
+    let obsY = (doc as any).lastAutoTable?.finalY || y + 20;
+    obsY += 10;
+    if (obsY > 250) { doc.addPage(); obsY = 20; }
+
+    doc.setDrawColor(200, 200, 200);
+    doc.line(15, obsY, 195, obsY);
+    obsY += 8;
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Observaciones Generales", 15, obsY);
+    obsY += 7;
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    const obsLines = doc.splitTextToSize(observations, 180);
+    doc.text(obsLines, 15, obsY);
   }
 
   addFooter(doc);
@@ -226,121 +402,32 @@ export async function generateServiceInvoicePDF(
 ) {
   const doc = new jsPDF();
   await loadLogo(doc);
-  addHeader(doc);
 
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.text("Factura de Servicio", 15, 70);
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(100, 100, 100);
-  doc.text(`N° ${service.id.slice(0, 8).toUpperCase()}`, 15, 77);
-  doc.text(`Fecha: ${formatDate(new Date())}`, 140, 77);
-  doc.setTextColor(0, 0, 0);
-
-  doc.setDrawColor(200, 200, 200);
-  doc.line(15, 82, 195, 82);
-
-  let y = 90;
-  const leftCol = 15;
-  const rightCol = 110;
-
-  const leftInfo: [string, string][] = [
-    ["Cliente:", client.name],
-    ["Teléfono:", client.phone || "—"],
-    ["Email:", client.email || "—"],
-  ];
-  const rightInfo: [string, string][] = [
-    ["Vehículo:", `${vehicle.brand} ${vehicle.model} ${vehicle.year}`],
-    ["Patente:", vehicle.plate],
-    ["Estado:", statusLabel(service.status)],
-  ];
-
-  if (service.repairArea) {
-    rightInfo.push(["Zona:", service.repairArea]);
-  }
-
-  leftInfo.forEach(([label, value]) => {
-    doc.setFont("helvetica", "bold");
-    doc.text(label, leftCol, y);
-    doc.setFont("helvetica", "normal");
-    doc.text(value, leftCol + 22, y);
-    y += 6;
-  });
-
-  y = 90;
-  rightInfo.forEach(([label, value]) => {
-    doc.setFont("helvetica", "bold");
-    doc.text(label, rightCol, y);
-    doc.setFont("helvetica", "normal");
-    doc.text(value, rightCol + 22, y);
-    y += 6;
-  });
-
-  y = Math.max(y, 90 + leftInfo.length * 6) + 6;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.text("Servicio", 15, y);
-  y += 6;
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  const descLines = doc.splitTextToSize(service.description, 180);
-  doc.text(descLines, 15, y);
-  y += descLines.length * 5 + 4;
-
-  doc.setDrawColor(200, 200, 200);
-  doc.line(15, y, 195, y);
-  y += 8;
-
-  const conceptRows: string[][] = [
-    ["Mano de obra", "1", formatCurrency(Number(service.laborCost)), formatCurrency(Number(service.laborCost))],
-  ];
-
-  if (service.parts && service.parts.length > 0) {
-    service.parts.forEach((p) => {
-      const subtotal = p.price * p.quantity;
-      conceptRows.push([p.name, String(p.quantity), formatCurrency(p.price), formatCurrency(subtotal)]);
-    });
-  }
-
-  autoTable(doc, {
-    startY: y,
-    head: [["Concepto", "Cant.", "Precio Unit.", "Subtotal"]],
-    body: conceptRows,
-    styles: { fontSize: 9, cellPadding: 4 },
-    headStyles: { fillColor: [6, 182, 212], textColor: [255, 255, 255], fontStyle: "bold" },
-    alternateRowStyles: { fillColor: [248, 248, 248] },
-    columnStyles: {
-      0: { cellWidth: 80 },
-      1: { cellWidth: 20 },
-      2: { cellWidth: 35 },
-      3: { cellWidth: 35, fontStyle: "bold" },
-    },
-  });
-
-  const afterTableY = (doc as any).lastAutoTable?.finalY || y;
-  const totalY = afterTableY + 10;
-
-  doc.setFillColor(6, 182, 212);
-  doc.roundedRect(120, totalY, 75, 12, 2, 2, "F");
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
-  doc.text(`TOTAL: ${formatCurrency(Number(service.totalCost))}`, 157, totalY + 8, { align: "center" });
-  doc.setTextColor(0, 0, 0);
-
-  if (service.notes) {
-    let notesY = totalY + 22;
-    if (notesY > 260) { doc.addPage(); notesY = 20; }
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    doc.text("Notas:", 15, notesY);
-    doc.setFont("helvetica", "normal");
-    const noteLines = doc.splitTextToSize(service.notes, 180);
-    doc.text(noteLines, 15, notesY + 5);
-  }
+  addInvoiceSection(doc, service, vehicle, client, 70, true);
 
   addFooter(doc);
   doc.save(`factura-${service.id.slice(0, 8)}.pdf`);
+}
+
+export async function generateBulkInvoicesPDF(
+  services: ServiceData[],
+  vehicle: { plate: string; brand: string; model: string; year: number },
+  client: { name: string; phone: string | null; email: string | null }
+) {
+  const doc = new jsPDF();
+  await loadLogo(doc);
+
+  let currentY = 70;
+
+  services.forEach((service, index) => {
+    if (index > 0) {
+      doc.addPage();
+      currentY = 10;
+    }
+
+    currentY = addInvoiceSection(doc, service, vehicle, client, currentY, true);
+  });
+
+  addFooter(doc);
+  doc.save(`facturas-${vehicle.plate}-${services.length}servicios.pdf`);
 }
