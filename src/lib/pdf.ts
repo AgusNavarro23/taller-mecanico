@@ -341,38 +341,65 @@ export async function generateVehicleHistoryPDF(
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
       doc.text("Repuestos Utilizados", 15, partsY);
-      partsY += 6;
+      partsY += 8;
 
-      servicesWithParts.forEach((service, i) => {
-        const col = i % 2;
-        const colX = col === 0 ? 15 : 107;
+      const colWidth = 88;
+      const leftX = 15;
+      const rightX = 107;
+      const maxDescLen = 30;
 
-        if (col === 0 && partsY > 260) { doc.addPage(); partsY = 20; }
-        if (col === 1 && partsY > 260) { partsY = 20; }
+      for (let i = 0; i < servicesWithParts.length; i += 2) {
+        const leftService = servicesWithParts[i];
+        const rightService = servicesWithParts[i + 1];
 
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "bold");
-        doc.text(`${service.description} — ${formatDate(service.entryDate)}`, colX, partsY);
+        let yLeft = partsY;
+        let yRight = partsY;
 
-        const partRows = (service.parts || []).map((p) => [
-          p.name, String(p.quantity),
-        ]);
+        const renderBlock = (service: ServiceData, x: number, startY: number): number => {
+          let blockY = startY;
 
-        autoTable(doc, {
-          startY: partsY + 4,
-          head: [["Repuesto", "Cant."]],
-          body: partRows,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [100, 100, 100], textColor: [255, 255, 255] },
-          margin: { left: colX },
-          tableWidth: 88,
-        });
+          if (blockY > 260) { doc.addPage(); blockY = 20; }
 
-        const tableBottom = (doc as any).lastAutoTable?.finalY || partsY + 10;
-        if (col === 1 || i === servicesWithParts.length - 1) {
-          partsY = tableBottom + 10;
+          const descTrunc = service.description.length > maxDescLen
+            ? service.description.substring(0, maxDescLen) + "..."
+            : service.description;
+
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(80, 80, 80);
+          doc.text(`Fecha: ${formatDate(service.entryDate)}`, x, blockY);
+          blockY += 4;
+
+          doc.setFontSize(9);
+          doc.setTextColor(0, 0, 0);
+          doc.text(descTrunc, x, blockY);
+          blockY += 5;
+
+          const partRows = (service.parts || []).map((p) => [
+            p.name, String(p.quantity),
+          ]);
+
+          autoTable(doc, {
+            startY: blockY,
+            head: [["Repuesto", "Cant."]],
+            body: partRows,
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [100, 100, 100], textColor: [255, 255, 255] },
+            margin: { left: x },
+            tableWidth: colWidth,
+          });
+
+          return (doc as any).lastAutoTable?.finalY || blockY + 10;
+        };
+
+        yLeft = renderBlock(leftService, leftX, yLeft);
+
+        if (rightService) {
+          yRight = renderBlock(rightService, rightX, yRight);
         }
-      });
+
+        partsY = Math.max(yLeft, yRight) + 10;
+      }
     }
   }
 
