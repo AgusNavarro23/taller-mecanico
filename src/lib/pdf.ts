@@ -354,11 +354,13 @@ export async function generateVehicleHistoryPDF(
         const leftService = servicesWithParts[i];
         const rightService = servicesWithParts[i + 1];
 
+        if (partsY > 250) { doc.addPage(); partsY = 20; }
+
         let yLeft = partsY;
         let yRight = partsY;
 
-        const renderBlock = (service: ServiceData, x: number, startY: number): number => {
-          let blockY = startY;
+        const renderBlock = (service: ServiceData, x: number, currentY: number): number => {
+          let blockY = currentY;
 
           const descTrunc = service.description.length > maxDescLen
             ? service.description.substring(0, maxDescLen) + "..."
