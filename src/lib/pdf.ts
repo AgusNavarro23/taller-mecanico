@@ -343,6 +343,8 @@ export async function generateVehicleHistoryPDF(
       doc.text("Repuestos Utilizados", 15, partsY);
       partsY += 8;
 
+      if (partsY > 260) { doc.addPage(); partsY = 20; }
+
       const colWidth = 88;
       const leftX = 15;
       const rightX = 107;
@@ -358,21 +360,20 @@ export async function generateVehicleHistoryPDF(
         const renderBlock = (service: ServiceData, x: number, startY: number): number => {
           let blockY = startY;
 
-          if (blockY > 260) { doc.addPage(); blockY = 20; }
-
           const descTrunc = service.description.length > maxDescLen
             ? service.description.substring(0, maxDescLen) + "..."
             : service.description;
+
+          doc.setFontSize(9);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(0, 0, 0);
+          doc.text(descTrunc, x, blockY);
+          blockY += 4;
 
           doc.setFontSize(8);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(80, 80, 80);
           doc.text(`Fecha: ${formatDate(service.entryDate)}`, x, blockY);
-          blockY += 4;
-
-          doc.setFontSize(9);
-          doc.setTextColor(0, 0, 0);
-          doc.text(descTrunc, x, blockY);
           blockY += 5;
 
           const partRows = (service.parts || []).map((p) => [
